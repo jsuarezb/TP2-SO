@@ -2,12 +2,6 @@
 #define _PMEM_H
 
 /**
- * Sets an offset to the memory available to map.
- * This will become handy to avoid overlapping kernel specific memory.
- */
-void set_pmem_offset(void *);
-
-/**
  * Alloc a block of physical memory
  */
 void * pmem_alloc();

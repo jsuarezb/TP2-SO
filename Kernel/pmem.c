@@ -6,20 +6,15 @@
 #include <stdint.h>
 #include "include/pmem.h"
 
-#define BLOCKS 1
+#define BLOCKS 1024
 #define BLOCK_SIZE 4 * 1024
+#define PMEM_OFFSET (void *) 0x10000
 
-static void * mem_offset = 0;
+// Physical memory offset, blocks will be given after this address
+static void * mem_offset = PMEM_OFFSET;
 static void * block_stack[BLOCKS];
 
-// Stack pointer
 static int stack_index = 0;
-
-void
-set_pmem_offset(void * address)
-{
-    mem_offset = address;
-}
 
 void *
 pmem_alloc()
