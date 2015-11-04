@@ -6,6 +6,7 @@
 
 #include "include/define.h"
 #include "include/video.h"
+#include "pmem.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -119,6 +120,7 @@ void IDTinitialize()
 int main()
 {
     IDTinitialize();
+    init_pmem();
 
     _vClear();
     ((EntryPoint)sampleCodeModuleAddress)();

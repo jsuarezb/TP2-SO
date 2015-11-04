@@ -4,7 +4,7 @@
 /*
  * Starts the shell
  */
-void startShell();
+void start_shell();
 
 /*
  * Prints shell line header

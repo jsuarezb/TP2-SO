@@ -9,9 +9,6 @@ char * v = (char*) 0xB8000 + 79 * 2;
 extern char bss;
 extern char endOfBinary;
 
-static int var1 = 0;
-static int var2 = 0;
-
 void * memset(void * destiny, int32_t c, uint64_t length);
 
 int main() {
@@ -19,6 +16,8 @@ int main() {
 	memset(&bss, 0, &endOfBinary - &bss);
 
 	start_shell();
+
+    return 0;
 }
 
 void * memset(void * destiation, int32_t c, uint64_t length) {
