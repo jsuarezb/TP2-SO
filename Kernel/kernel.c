@@ -119,16 +119,16 @@ void IDTinitialize()
 
 int main()
 {
-    IDTinitialize();
-    init_pmem();
-
-    // Por si quieren probar como funciona...
-    // ncPrintHex((uint64_t) pmem_alloc());
-	// ncNewline();
-    // ncPrintHex((uint64_t) pmem_alloc());
-    // while (1);
-
     _vClear();
+    
+    IDTinitialize();
+
+    ncPrint("Starting pmem...");
+    init_pmem();
+    ncPrint(" OK");
+    ncNewline();
+
+    while (1);
     ((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;
