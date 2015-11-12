@@ -1,73 +1,116 @@
 #ifndef _PAGING_H
 #define _PAGING_H
 
-// A long mode virtual address is mapped as follows:
-// Most significant 9 bits -> PML4 index
-// Next 9 bits -> PDP index
-// Next 9 bits -> PD index
-// Next 9 bits -> PT index
-// Last 12 bits -> index inside the page
+#define CR3_PCD     (1 << 4)
+#define CR3_PWT     (1 << 3)
+#define CR3_PML4_ADDR_OFF   12
+#define CR3_PML4_ADDR_MASK  (uint64_t) 0xFFFFFFFFFF
 
-typedef uint64_t bits_cr3;
-typedef uint64_t bits_pml4e;
-typedef uint64_t bits_pdpe;
-typedef uint64_t bits_pde;
-typedef uint64_t bits_pte;
+#define PAGE_NX     ((uint64_t) 1 << 63)
+#define PAGE_GLOBAL ((uint64_t) 1 << 8)
+#define PAGE_BOTTOM ((uint64_t) 1 << 7)
+#define PAGE_DIRTY  ((uint64_t) 1 << 6)
+#define PAGE_PCD    ((uint64_t) 1 << 5)
+#define PAGE_PWT    ((uint64_t) 1 << 4)
+#define PAGE_US     ((uint64_t) 1 << 3)
+#define PAGE_RW     ((uint64_t) 1 << 2)
+#define PAGE_PRESENT    ((uint64_t) 1)
 
-typedef struct CR3 {
-    uint64_t   pml4_address; // this address is aligned to 4Kb, giving addresses of 52 bits (last 12 set to 0)
-    uint8_t    pcd; // caching policy
-    uint8_t    pwt; // writethrough policy
-} CR3;
+#define PAGE_PDP_PAT    ((uint64_t) 1 << 12)
+#define PAGE_PTE_PAT    ((uint64_t) 1 << 7)
 
-typedef struct PML4E {
-    uint8_t     nx;
-    uint64_t    pdp_address;
-    uint8_t     accessed;
-    uint8_t     pcd; // chache flag
-    uint8_t     pwt; // writethrough flag
-    uint8_t     user_supervisor;  // 0 to kernel, 1 to user
-    uint8_t     read_write; // 0 read-only, 1 read-write
-    uint8_t     present;
-} PML4E;
+#define PAGE_BASE_ADDR_MASK     ((uint64_t) 0xFFFFFFFFFF)
+#define PAGE_BASE_ADDR_OFF      12
 
-typedef struct PDPE {
-    uint8_t     is_bottom_level;
-    uint8_t     nx;
-    uint64_t    pd_address;
-    uint8_t     accessed;
-    uint8_t     pcd; // chache flag
-    uint8_t     pwt; // writethrough flag
-    uint8_t     user_supervisor;  // 0 to kernel, 1 to user
-    uint8_t     read_write; // 0 read-only, 1 read-write
-    uint8_t     present;
-    uint8_t     pat;
-    uint8_t     global;
-    uint8_t     dirty;
-} PDPE;
+#define PAGE_1GB_BASE_ADDR_MASK ((uint64_t) 0x3FFFFF)
+#define PAGE_1GB_BASE_ADDR_OFF  30
 
+typedef uint64_t CR3;
+typedef uint64_t PML4E;
+typedef uint64_t PDPE;
+typedef uint64_t PDE;
+typedef uint64_t PTE;
+
+/**
+ * Creates a new paging tables structure and identity-maps the first
+ * GB of kernel memory.
+ */
 void init_paging(void);
 
 /**
- * Get the cr3 value from the processor and stores it in `cr3` struct
+ * Returns a PML4 entry
  *
- * @param cr3   pointer to a cr3_register struct
+ * @param pml4_index   index of the entry inside PML4 table
+ * @return a PML4 entry
  */
-void get_cr3(CR3 * cr3);
+PML4E get_pml4e(int pml4_index);
 
 /**
- * Set the cr3 register value with the given values in `cr3` struct
+ * Sets a PML4 entry
  *
- * @param cr3   pointer to a cr3_register struct
+ * @param pml4e         entry to set
+ * @param pml4_index    index of the entry inside PML4 table
  */
-void set_cr3(CR3 * cr3);
+void set_pml4e(PML4E pml4, int pml4_index);
 
-void get_pml4e(PML4E * entry, int pml4e_index);
+/**
+ * Returns a PDP entry
+ *
+ * @param pml4_index    index of the entry inside PML4 table
+ * @param pdp_index     index of the entry inside PDP table
+ * @return a PDP entry
+ */
+PDPE get_pdpe(int pml4_index, int pdp_index);
 
-void set_pml4e(PML4E * entry, int pml4e_index);
+/**
+ * Sets a PDP entry
+ *
+ * @param pdpe           entry to set
+ * @param pml4_index    index of the entry inside PML4 table
+ * @param pdp_index     index of the entry inside PDP table
+ */
+void set_pdpe(PDPE pdpe, int pml4_index, int pdp_index);
 
-void get_pdpe(PDPE * entry, int pml4e_index, int pdp_index);
+/**
+ * Returns a PD entry
+ *
+ * @param pml4_index    index of the entry inside PML4 table
+ * @param pdp_index     index of the entry inside PDP table
+ * @param pd_index     index of the entry inside PD table
+ * @return a PD entry
+ */
+PDE get_pde(int pml4_index, int pdp_index, int pd_index);
 
-void set_pdpe(PDPE * entry, int pml4e_index, int pdp_index);
+/**
+ * Sets a PD entry
+ *
+ * @param pde           entry to set
+ * @param pml4_index    index of the entry inside PML4 table
+ * @param pdp_index     index of the entry inside PDP table
+ * @param pd_index      index of the entry inside PD table
+ */
+void set_pde(PDE pde, int pml4_index, int pdp_index, int pd_index);
+
+/**
+ * Returns a PT entry
+ *
+ * @param pml4_index    index of the entry inside PML4 table
+ * @param pdp_index     index of the entry inside PDP table
+ * @param pd_index      index of the entry inside PD table
+ * @param pt_index      index of the entry inside PT table
+ * @return a PT entry
+ */
+PTE get_pte(int pml4_index, int pdp_index, int pd_index, int pt_index);
+
+/**
+ * Sets a PT entry
+ *
+ * @param pte           entry to set
+ * @param pml4_index    index of the entry inside PML4 table
+ * @param pdp_index     index of the entry inside PDP table
+ * @param pd_index      index of the entry inside PD table
+ * @param pt_index      index of the entry inside PT table
+ */
+void set_pte(PTE pte, int pml4_index, int pdp_index, int pd_index, int pt_index);
 
 #endif
