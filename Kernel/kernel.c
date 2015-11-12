@@ -6,6 +6,7 @@
 
 #include "include/define.h"
 #include "include/video.h"
+#include "include/paging.h"
 #include "pmem.h"
 
 extern uint8_t text;
@@ -120,7 +121,7 @@ void IDTinitialize()
 int main()
 {
     _vClear();
-    
+
     IDTinitialize();
 
     ncPrint("Starting pmem...");
@@ -128,7 +129,10 @@ int main()
     ncPrint(" OK");
     ncNewline();
 
+    init_paging();
+
     while (1);
+
     ((EntryPoint)sampleCodeModuleAddress)();
 
 	return 0;

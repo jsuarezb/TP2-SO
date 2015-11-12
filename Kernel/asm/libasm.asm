@@ -7,6 +7,9 @@ GLOBAL _cli
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
 
+GLOBAL _asm_get_cr3
+GLOBAL _asm_set_cr3
+
 %macro pushaq 0
     push rax      ;save current rax
     push rbx      ;save current rbx
@@ -139,8 +142,6 @@ cpuVendor:
 	push rbx
 
 	mov rax, 0
-	cpuid
-
 
 	mov [rdi], ebx
 	mov [rdi + 4], edx
@@ -155,3 +156,23 @@ cpuVendor:
 	mov rsp, rbp
 	pop rbp
 	ret
+
+_asm_get_cr3:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, cr3
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+_asm_set_cr3:
+    push rbp
+    mov rbp, rsp
+
+    mov cr3, rdi
+
+    mov rsp, rbp
+    pop rbp
+    ret
