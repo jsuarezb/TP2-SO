@@ -3,16 +3,6 @@
 #include "include/paging.h"
 #include "include/naiveConsole.h"
 
-static CR3 create_cr3(uint64_t address, uint64_t flags);
-
-static PML4E create_pml4e(uint64_t address, uint64_t flags);
-
-static PDPE create_pdpe(uint64_t address, uint64_t flags);
-
-static PDE create_pde(uint64_t address, uint64_t flags);
-
-static PTE create_pte(uint64_t address, uint64_t flags);
-
 static PML4E * get_pml4_table();
 
 static PDPE * get_pdp_table(int pml4_index);
@@ -49,8 +39,6 @@ init_paging(void)
 
     char * i = (char *) 0x40000000 + 4 * 1024 - 1;
     i[0] = 'a';
-
-    while (1);
 }
 
 PML4E
@@ -110,19 +98,19 @@ set_pte(PTE entry, int pml4_index, int pdp_index, int pd_index, int pt_index)
     table[pt_index] = entry;
 }
 
-static CR3
+CR3
 create_cr3(uint64_t address, uint64_t flags)
 {
     return flags | ((address << CR3_PML4_ADDR_OFF) & CR3_PML4_ADDR_MASK);
 }
 
-static PML4E
+PML4E
 create_pml4e(uint64_t address, uint64_t flags)
 {
     return flags | ((address << PAGE_BASE_ADDR_OFF) & PAGE_BASE_ADDR_MASK);
 }
 
-static PDPE
+PDPE
 create_pdpe(uint64_t address, uint64_t flags)
 {
     return (flags & PAGE_BOTTOM
@@ -130,13 +118,13 @@ create_pdpe(uint64_t address, uint64_t flags)
         : ((address << PAGE_BASE_ADDR_OFF) & PAGE_BASE_ADDR_MASK) | flags);
 }
 
-static PDE
+PDE
 create_pde(uint64_t address, uint64_t flags)
 {
     return flags | ((address << PAGE_BASE_ADDR_OFF) & PAGE_BASE_ADDR_MASK);
 }
 
-static PTE
+PTE
 create_pte(uint64_t address, uint64_t flags)
 {
     return flags | ((address << PAGE_BASE_ADDR_OFF) & PAGE_BASE_ADDR_MASK);

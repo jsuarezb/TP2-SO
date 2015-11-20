@@ -7,6 +7,7 @@
 #include "include/define.h"
 #include "include/video.h"
 #include "include/paging.h"
+#include "include/kalloc.h"
 #include "pmem.h"
 
 extern uint8_t text;
@@ -118,6 +119,18 @@ void IDTinitialize()
 	_sti();
 }
 
+int
+set_interruptions(int enable)
+{
+    uint64_t flags = _asm_get_eflags();
+    if (enable)
+        _sti();
+    else
+        _cli();
+
+    return (flags & 0x200) != 0;
+}
+
 int main()
 {
     _vClear();
@@ -130,6 +143,12 @@ int main()
     ncNewline();
 
     init_paging();
+
+    char * add1 = kalloc();
+    char * add2 = kalloc();
+
+    kfree(add2);
+    add2[1] = 'a';
 
     while (1);
 

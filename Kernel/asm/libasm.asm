@@ -9,6 +9,7 @@ GLOBAL picSlaveMask
 
 GLOBAL _asm_get_cr3
 GLOBAL _asm_set_cr3
+GLOBAL _asm_get_eflags
 
 %macro pushaq 0
     push rax      ;save current rax
@@ -172,6 +173,18 @@ _asm_set_cr3:
     mov rbp, rsp
 
     mov cr3, rdi
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+; Returns EFLAGS
+_asm_get_eflags:
+    push rbp
+    mov rbp, rsp
+
+    pushfq
+    pop rax
 
     mov rsp, rbp
     pop rbp

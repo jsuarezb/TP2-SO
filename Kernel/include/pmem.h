@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define PMEM_OFFSET ((uint64_t) 0x8000000) // 512 MB de offset
+#define PMEM_OFFSET ((uint64_t) 0x40000000) // 512 MB de offset
 
 #define MEM_SIZE    ((uint64_t) 4 * 1024 * 1024 * 1024) // 4 GB
 #define BLOCK_SIZE  (4 * 1024) // 4 KB

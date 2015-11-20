@@ -28,4 +28,9 @@ uint64_t _asm_get_cr3(void);
  */
 void _asm_set_cr3(uint64_t cr3);
 
+/**
+ * Returns the EFLAGS
+ */
+uint64_t _asm_get_eflags(void);
+
 #endif

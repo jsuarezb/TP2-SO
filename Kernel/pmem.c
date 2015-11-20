@@ -60,7 +60,7 @@ init_pmem()
 {
     int i;
 
-    for (i = 0; i < BLOCKS; i++)
+    for (i = 0; i < BLOCKS * BITS_IN_BYTE; i++)
         bitmap[i] = 0x00;
 }
 
@@ -145,11 +145,20 @@ set_block_status(char * bitmap, int status, void * address)
 static uint64_t
 get_free_block(char * bitmap)
 {
-    uint64_t i = 0;
+    uint64_t i = 0, j = 0;
 
     while (i < BLOCKS) {
-        if (get_block_status(bitmap, (void *) (i * BLOCK_SIZE)) == FREE_BLOCK)
-            return i;
+        if (bitmap[i] != 0xFF) {
+            j = 0;
+
+            while (j < BITS_IN_BYTE) {
+                if (get_block_status(bitmap, (void *) ((i + j) * BLOCK_SIZE))
+                        == FREE_BLOCK)
+                    return i + j;
+
+                j++;
+            }
+        }
 
         i++;
     }
