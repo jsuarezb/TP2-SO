@@ -6,8 +6,12 @@
 #define NULL (void*)0
 
 static int next_pid();
+
 void sched_init();
-stack_ptr sched_switch_to_kernel(stack_ptr stack);
-stack_ptr sched_switch_to_user();
+
+stack_ptr switch_user_to_kernel(stack_ptr esp);
+stack_ptr switch_kernel_to_user(stack_ptr esp);
+
+stack_ptr get_entry_point();
 
 #endif

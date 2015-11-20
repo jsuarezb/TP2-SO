@@ -50,7 +50,7 @@ init_paging(void)
     char * i = (char *) 0x40000000 + 4 * 1024 - 1;
     i[0] = 'a';
 
-    while (1);
+    //while (1);
 }
 
 PML4E

@@ -1,8 +1,11 @@
 #ifndef _TASK_H
 #define _TASK_H
 
-typedef int (*EntryPoint)();
 typedef void* stack_ptr;
+
+#define MAX_TASKS	128
+#define STACK_BASE	0x80000000
+#define STACK_SIZE	0x10000
 
 typedef struct{
 	uint64_t r15;
@@ -31,27 +34,15 @@ typedef struct{
 	uint64_t base;
 } context_t;
 
-typedef enum{
-	TASK_READY,
-	TASK_PAUSED,
-	TASK_CURRENT
-} task_state_t;
+typedef struct task_t task_t;
 
-typedef enum{
-	TASK_FOREGROUND,
-	TASK_BACKGROUND
-} task_mode_t;
-
-typedef struct {
-	task_state_t state;
+struct task_t {
+	int pid;
 	stack_ptr stack;
+	task_t* next;
+	void* entryPoint;
+};
 
- 	struct task_t *next;
-	struct task_t *prev;
-
- 	int pid;
- } task_t;
-
-task_t *task_create(EntryPoint func, int pid, int argc, char** argv);
+void task_init(task_t* task, void* func, int argc, char** argv);
 
 #endif

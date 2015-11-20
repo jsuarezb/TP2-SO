@@ -6,6 +6,7 @@ GLOBAL _sti
 GLOBAL _cli
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
+GLOBAL finalizeSetup
 
 GLOBAL _asm_get_cr3
 GLOBAL _asm_set_cr3
@@ -58,8 +59,9 @@ EXTERN keyboardHandler
 EXTERN timertickHandler
 EXTERN syscallHandler
 EXTERN _vWrite
-EXTERN sched_switch_to_kernel
-EXTERN sched_switch_to_user
+EXTERN switch_user_to_kernel
+EXTERN switch_kernel_to_user
+EXTERN get_entry_point
 
 section .text
 
@@ -100,13 +102,15 @@ picSlaveMask:
 _irq00handler:
 	pushaq
 
-	call sched_switch_to_kernel
+	mov rdi, rsp
+
+	call switch_user_to_kernel
 
 	mov rsp, rax
 
 	call timertickHandler
 
-	call sched_switch_to_user
+	call switch_kernel_to_user
 
 	mov rsp, rax
 
@@ -186,3 +190,12 @@ _asm_set_cr3:
     mov rsp, rbp
     pop rbp
     ret
+
+ ; Scheduler
+
+ finalizeSetup:
+ 	call switch_kernel_to_user
+ 	;mov rsp, rax
+
+ 	call get_entry_point
+ 	jmp rax

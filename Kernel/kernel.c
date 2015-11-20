@@ -17,6 +17,8 @@ extern uint8_t bss;
 extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
+extern void finalizeSetup();
+
 static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
@@ -36,8 +38,11 @@ void clearBSS(void * bssAddress, uint64_t bssSize)
 
 void * getStackBase()
 {
-	kernel_stack = pmem_alloc();
-	kernel_stack += 0x1000;	// go to the bottom of the stack
+	/*kernel_stack = pmem_alloc();
+	kernel_stack += 0x1000;	// go to the bottom of the stack*/
+
+	kernel_stack = (uint64_t)&endOfKernel + PageSize * 8 - sizeof(uint64_t);//The size of the stack itself, 32KiB
+		
 	/*return (void*)(
 		(uint64_t)&endOfKernel
 		+ PageSize * 8				//The size of the stack itself, 32KiB
@@ -134,18 +139,21 @@ int main()
 {
     _vClear();
 
-    /*init_paging();
-
-    while (1);*/
-
     ncPrint("Starting scheduler");
     sched_init();
-    ncPrint(" OK");
+    ncPrint(" OK ");
     ncNewline();
 
-    //IDTinitialize();
+    ncPrint("Creating shell");
+    task_t* shell = create_task((void*)0x400000, 0, NULL);
+	add_task(shell);
+	ncPrint(" OK ");
 
-    ((EntryPoint)sampleCodeModuleAddress)();
+	//init_paging();
+
+	//IDTinitialize();
+
+	finalizeSetup();
 
 	return 0;
 }
