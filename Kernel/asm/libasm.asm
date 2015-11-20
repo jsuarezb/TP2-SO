@@ -58,6 +58,8 @@ EXTERN keyboardHandler
 EXTERN timertickHandler
 EXTERN syscallHandler
 EXTERN _vWrite
+EXTERN sched_switch_to_kernel
+EXTERN sched_switch_to_user
 
 section .text
 
@@ -98,7 +100,15 @@ picSlaveMask:
 _irq00handler:
 	pushaq
 
+	call sched_switch_to_kernel
+
+	mov rsp, rax
+
 	call timertickHandler
+
+	call sched_switch_to_user
+
+	mov rsp, rax
 
 	END_INT
 

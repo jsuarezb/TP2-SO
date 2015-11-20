@@ -8,6 +8,7 @@
 #include "include/video.h"
 #include "include/paging.h"
 #include "pmem.h"
+#include "include/scheduler.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -22,9 +23,11 @@ static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
 
 typedef int (*EntryPoint)();
+typedef void* stack_ptr;
 
 static struct IDTEntry* idt = (struct IDTEntry*) 0x0000;
 struct KBD keyboard;
+stack_ptr kernel_stack;
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
 {
@@ -33,11 +36,14 @@ void clearBSS(void * bssAddress, uint64_t bssSize)
 
 void * getStackBase()
 {
-	return (void*)(
+	kernel_stack = pmem_alloc();
+	kernel_stack += 0x1000;
+	/*return (void*)(
 		(uint64_t)&endOfKernel
 		+ PageSize * 8				//The size of the stack itself, 32KiB
 		- sizeof(uint64_t)			//Begin at the top of the stack
-	);
+	);*/
+	return kernel_stack;
 }
 
 void * initializeKernelBinary()
@@ -122,16 +128,21 @@ int main()
 {
     _vClear();
 
-    IDTinitialize();
-
     ncPrint("Starting pmem...");
     init_pmem();
     ncPrint(" OK");
     ncNewline();
 
-    init_paging();
+    /*init_paging();
 
-    while (1);
+    while (1);*/
+
+    ncPrint("Starting scheduler");
+    sched_init();
+    ncPrint(" OK");
+    ncNewline();
+
+    //IDTinitialize();
 
     ((EntryPoint)sampleCodeModuleAddress)();
 
