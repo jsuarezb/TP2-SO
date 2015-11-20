@@ -37,7 +37,7 @@ void clearBSS(void * bssAddress, uint64_t bssSize)
 void * getStackBase()
 {
 	kernel_stack = pmem_alloc();
-	kernel_stack += 0x1000;
+	kernel_stack += 0x1000;	// go to the bottom of the stack
 	/*return (void*)(
 		(uint64_t)&endOfKernel
 		+ PageSize * 8				//The size of the stack itself, 32KiB
@@ -90,6 +90,12 @@ void * initializeKernelBinary()
 	ncPrint("[Done]");
 	ncNewline();
 	ncNewline();
+
+    ncPrint("Starting pmem...");
+    init_pmem();
+    ncPrint(" OK");
+    ncNewline();
+
 	return getStackBase();
 }
 
@@ -127,11 +133,6 @@ void IDTinitialize()
 int main()
 {
     _vClear();
-
-    ncPrint("Starting pmem...");
-    init_pmem();
-    ncPrint(" OK");
-    ncNewline();
 
     /*init_paging();
 
