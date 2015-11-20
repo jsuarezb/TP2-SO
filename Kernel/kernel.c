@@ -148,7 +148,6 @@ int main()
     char * add2 = kalloc();
 
     kfree(add2);
-    add2[1] = 'a';
 
     while (1);
 

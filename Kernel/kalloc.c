@@ -3,7 +3,7 @@
 #include "include/paging.h"
 #include <naiveConsole.h>
 
-void * available_virtual_address = 0x40000000;
+void * available_virtual_address = 0x80000000;
 
 /**
  * Allocates a page and links it with a physical page
@@ -66,6 +66,11 @@ kfree(void * virtual_address)
     int pt_index = (address >> 12) & 0x1FF;
 
     PTE pte = get_pte(pml4_index, pdp_index, pd_index, pt_index);
+
+    ncPrint("PTE: ");
+    ncPrintHex(pte);
+    ncNewline();
+
     void * pmem_address = (void *) (pte & (PAGE_BASE_ADDR_MASK << PAGE_BASE_ADDR_OFF));
 
     set_pte(create_pte(0, PAGE_US | PAGE_RW), pml4_index, pdp_index, pd_index, pt_index);

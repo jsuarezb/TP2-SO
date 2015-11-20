@@ -19,26 +19,14 @@ init_paging(void)
 {
     CR3 cr3 = create_cr3(0x800, 0);
     pml4_table[0]   = create_pml4e(0x801, PAGE_US | PAGE_RW | PAGE_PRESENT);
+
+    // Mapt 4GB of memory
     pdpe_table1[0]  = create_pdpe(0x000, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
+    pdpe_table1[1]  = create_pdpe(0x001, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
+    pdpe_table1[2]  = create_pdpe(0x002, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
+    pdpe_table1[3]  = create_pdpe(0x003, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
+
     _asm_set_cr3(cr3);
-
-    PDPE pdpe = create_pdpe(0x802, PAGE_US | PAGE_RW | PAGE_PRESENT);
-    set_pdpe(pdpe, 0, 1);
-
-    PDE pde = create_pde(0x803, PAGE_US | PAGE_RW | PAGE_PRESENT);
-    set_pde(pde, 0, 1, 0);
-
-    PTE pte = create_pte(0x40000, PAGE_US | PAGE_RW | PAGE_PRESENT);
-    set_pte(pte, 0, 1, 0, 0);
-
-    // PDE pde = create_pde(0x950, PAGE_US | PAGE_RW | PAGE_PRESENT);
-    // set_pde(pde, 0, 1, 0);
-    //
-    // PTE pte = create_pte(0x40000, PAGE_US | PAGE_RW | PAGE_PRESENT);
-    // set_pte(pte, 0, 1, 0, 0);
-
-    char * i = (char *) 0x40000000 + 4 * 1024 - 1;
-    i[0] = 'a';
 }
 
 PML4E
