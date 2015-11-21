@@ -9,6 +9,7 @@
 #include "include/paging.h"
 #include "include/kalloc.h"
 #include "pmem.h"
+#include "include/scheduler.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -17,15 +18,19 @@ extern uint8_t bss;
 extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
+extern void finalizeSetup();
+
 static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
 
 typedef int (*EntryPoint)();
+typedef void* stack_ptr;
 
 static struct IDTEntry* idt = (struct IDTEntry*) 0x0000;
 struct KBD keyboard;
+stack_ptr kernel_stack;
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
 {
@@ -34,11 +39,17 @@ void clearBSS(void * bssAddress, uint64_t bssSize)
 
 void * getStackBase()
 {
-	return (void*)(
+	/*kernel_stack = pmem_alloc();
+	kernel_stack += 0x1000;	// go to the bottom of the stack*/
+
+	kernel_stack = (uint64_t)&endOfKernel + PageSize * 8 - sizeof(uint64_t);//The size of the stack itself, 32KiB
+
+	/*return (void*)(
 		(uint64_t)&endOfKernel
 		+ PageSize * 8				//The size of the stack itself, 32KiB
 		- sizeof(uint64_t)			//Begin at the top of the stack
-	);
+	);*/
+	return kernel_stack;
 }
 
 void * initializeKernelBinary()
@@ -85,6 +96,12 @@ void * initializeKernelBinary()
 	ncPrint("[Done]");
 	ncNewline();
 	ncNewline();
+
+    ncPrint("Starting pmem...");
+    init_pmem();
+    ncPrint(" OK");
+    ncNewline();
+
 	return getStackBase();
 }
 
@@ -131,29 +148,33 @@ set_interruptions(int enable)
     return (flags & 0x200) != 0;
 }
 
-int
-main()
+void initialize_task(int argc, char** argv) {
+	IDTinitialize();
+	while(1);
+}
+
+int main()
 {
-    _vClear();
 
-    IDTinitialize();
-
-    ncPrint("Starting pmem...");
-    init_pmem();
-    ncPrint(" OK");
+    ncPrint("Starting scheduler");
+    sched_init();
+    ncPrint(" OK ");
     ncNewline();
 
-    init_paging();
+    ncPrint("Creating shell");
+    task_t* shell = create_task((void*)0x400000, 0, NULL);
+	add_task(shell);
+	ncPrint(" OK ");
 
-    int i = 0;
-    for (i = 0; i < 1000000; i++)
-        kalloc();
+	// process que va a correr
+	task_t* init_task = create_task((void*)initialize_task, 0, NULL);
+	add_task(init_task);
 
-    ncPrintHex(kalloc());
+	init_paging();
 
-    while (1);
+	_vClear();
 
-    ((EntryPoint)sampleCodeModuleAddress)();
+	finalizeSetup();
 
 	return 0;
 }

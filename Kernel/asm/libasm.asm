@@ -6,6 +6,7 @@ GLOBAL _sti
 GLOBAL _cli
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
+GLOBAL finalizeSetup
 
 GLOBAL _asm_get_cr3
 GLOBAL _asm_set_cr3
@@ -27,9 +28,13 @@ GLOBAL _asm_get_eflags
     push r13      ;save current r13
     push r14      ;save current r14
     push r15      ;save current r15
+    push fs
+    push gs
 %endmacro
 
 %macro popaq 0
+	pop gs
+	pop fs
 	pop r15
 	pop r14
 	pop r13
@@ -59,6 +64,10 @@ EXTERN keyboardHandler
 EXTERN timertickHandler
 EXTERN syscallHandler
 EXTERN _vWrite
+EXTERN switch_user_to_kernel
+EXTERN switch_kernel_to_user
+EXTERN get_entry_point
+EXTERN IDTinitialize
 
 section .text
 
@@ -99,7 +108,17 @@ picSlaveMask:
 _irq00handler:
 	pushaq
 
+	mov rdi, rsp
+
+	call switch_user_to_kernel
+
+	mov rsp, rax
+
 	call timertickHandler
+
+	call switch_kernel_to_user
+
+	mov rsp, rax
 
 	END_INT
 
@@ -189,3 +208,13 @@ _asm_get_eflags:
     mov rsp, rbp
     pop rbp
     ret
+
+; Scheduler
+finalizeSetup:
+    ;call IDTinitialize
+
+ 	call switch_kernel_to_user
+ 	mov rsp, rax
+
+ 	call get_entry_point
+ 	jmp rax
