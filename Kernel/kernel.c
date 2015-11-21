@@ -186,9 +186,6 @@ int main()
 	init_paging();
 	_vClear();
 
-    void * op = shm_open(0x20);
-    void * ge = shm_get(0x20);
-
 	finalizeSetup();
 
 	return 0;

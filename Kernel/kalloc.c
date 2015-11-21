@@ -13,14 +13,40 @@ static void * available_virtual_address = HEAP_VIRTUAL_START;
 void *
 kalloc(void)
 {
-    int is_present;
-    void * address;
+    void * virtual_address = available_virtual_address;
+    available_virtual_address += PAGE_SIZE; // Go to the next page
 
-    uint64_t virtual_address = (uint64_t) available_virtual_address;
-    uint64_t pml4_index = (virtual_address >> 39) & 0x1FF;
-    uint64_t pdp_index = (virtual_address >> 30) & 0x1FF;
-    uint64_t pd_index = (virtual_address >> 21) & 0x1FF;
-    uint64_t pt_index = (virtual_address >> 12) & 0x1FF;
+    return virtual_kalloc(virtual_address);
+}
+
+void
+kfree(void * virtual_address)
+{
+    uint64_t address = (uint64_t) virtual_address;
+
+    int pml4_index = (address >> 39) & 0x1FF;
+    int pdp_index = (address >> 30) & 0x1FF;
+    int pd_index = (address >> 21) & 0x1FF;
+    int pt_index = (address >> 12) & 0x1FF;
+
+    PTE pte = get_pte(pml4_index, pdp_index, pd_index, pt_index);
+
+    void * pmem_address = (void *) (pte & (PAGE_BASE_ADDR_MASK << PAGE_BASE_ADDR_OFF));
+    set_pte(0, pml4_index, pdp_index, pd_index, pt_index);
+
+    pmem_free(pmem_address);
+}
+
+void *
+virtual_kalloc(void * virtual_address)
+{
+    int is_present;
+    void * address = virtual_address;
+
+    uint64_t pml4_index = ((uint64_t) virtual_address >> 39) & 0x1FF;
+    uint64_t pdp_index = ((uint64_t) virtual_address >> 30) & 0x1FF;
+    uint64_t pd_index = ((uint64_t) virtual_address >> 21) & 0x1FF;
+    uint64_t pt_index = ((uint64_t) virtual_address >> 12) & 0x1FF;
 
     PML4E pml4e = get_pml4e(pml4_index);
     is_present = pml4e & PAGE_PRESENT;
@@ -61,25 +87,5 @@ kalloc(void)
     PTE pte = create_pte((uint64_t) block_address >> 12, PAGE_US | PAGE_RW | PAGE_PRESENT);
     set_pte(pte, pml4_index, pdp_index, pd_index, pt_index);
 
-    available_virtual_address += PAGE_SIZE; // Go to the next page
-
-    return (void *) virtual_address;
-}
-
-void
-kfree(void * virtual_address)
-{
-    uint64_t address = (uint64_t) virtual_address;
-
-    int pml4_index = (address >> 39) & 0x1FF;
-    int pdp_index = (address >> 30) & 0x1FF;
-    int pd_index = (address >> 21) & 0x1FF;
-    int pt_index = (address >> 12) & 0x1FF;
-
-    PTE pte = get_pte(pml4_index, pdp_index, pd_index, pt_index);
-
-    void * pmem_address = (void *) (pte & (PAGE_BASE_ADDR_MASK << PAGE_BASE_ADDR_OFF));
-    set_pte(0, pml4_index, pdp_index, pd_index, pt_index);
-
-    pmem_free(pmem_address);
+    return virtual_address;
 }

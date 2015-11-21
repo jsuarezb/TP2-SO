@@ -18,4 +18,12 @@ void * kalloc(void);
  */
 void kfree(void * address);
 
+/**
+ * Allocates a block into the linear address specified.
+ * This will allocate all tables needed to reach Page Table level.
+ *
+ * @param virtual_address   linear address to map
+ */
+void * virtual_kalloc(void * address);
+
 #endif
