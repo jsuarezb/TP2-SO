@@ -31,4 +31,16 @@ void task_init(task_t* task, void* func, int argc, char** argv){
 	context->rsp = (uint64_t)&(context->base);
 	context->ss = 0x0;
 	context->base = 0x0;
+
+	task->entryPoint = func;
+
+	task_ready(task);
+}
+
+task_t* task_ready(task_t* task){
+	task->state = TASK_READY;
+}
+
+task_t* task_pause(task_t* task){
+	task->state = TASK_PAUSED;
 }

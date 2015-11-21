@@ -67,7 +67,6 @@ EXTERN _vWrite
 EXTERN switch_user_to_kernel
 EXTERN switch_kernel_to_user
 EXTERN get_entry_point
-EXTERN IDTinitialize
 
 section .text
 
@@ -211,8 +210,6 @@ _asm_get_eflags:
 
 ; Scheduler
 finalizeSetup:
-    ;call IDTinitialize
-
  	call switch_kernel_to_user
  	mov rsp, rax
 
