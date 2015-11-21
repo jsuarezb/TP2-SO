@@ -38,24 +38,25 @@ typedef struct{
 
 typedef enum {
 	TASK_READY,
-	TASK_PAUSED,
-	TASK_CURRENT,
-	TASK_UNAVAILABLE
+	TASK_PAUSED
 } task_state_t;
 
 typedef struct task_t task_t;
 
 struct task_t {
 	int pid;
+
 	stack_ptr stack;
+	
 	task_t* next;
 	void* entryPoint;
+
 	task_state_t state;
 };
 
 void task_init(task_t* task, void* func, int argc, char** argv);
+
 task_t* task_ready(task_t* task);
 task_t* task_pause(task_t* task);
-task_t* task_current(task_t* task);
 
 #endif

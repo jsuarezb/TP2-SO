@@ -148,9 +148,21 @@ set_interruptions(int enable)
     return (flags & 0x200) != 0;
 }
 
-void initialize_task(int argc, char** argv) {
+static int init_task_pid = -1;
+
+void initialize_task() {
 	IDTinitialize();
 	while(1);
+}
+
+void shell_task(){
+	
+	// Remove the init_task
+	remove_task_with_pid(init_task_pid);
+
+	// Start the shell
+	((EntryPoint)sampleCodeModuleAddress)();
+	
 }
 
 int main()
@@ -162,13 +174,14 @@ int main()
     ncNewline();
 
     ncPrint("Creating shell");
-    task_t* shell = create_task((void*)0x400000, 0, NULL);
-	add_task(shell);
+    task_t* shell = create_task((void*)shell_task, 0, NULL);
+    add_task(shell);
 	ncPrint(" OK ");
 
-	// process que va a correr
+	// Task to initialize the IDT
 	task_t* init_task = create_task((void*)initialize_task, 0, NULL);
 	add_task(init_task);
+	init_task_pid = init_task->pid;
 
 	init_paging();
 	_vClear();

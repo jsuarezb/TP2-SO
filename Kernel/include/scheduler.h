@@ -5,13 +5,16 @@
 
 #define NULL (void*)0
 
-static int next_pid();
-
 void sched_init();
 
-stack_ptr switch_user_to_kernel(stack_ptr esp);
-stack_ptr switch_kernel_to_user(stack_ptr esp);
+task_t* create_task(void* func, int argc, char**argv);
 
-stack_ptr get_entry_point();
+task_t* find_task_with_pid(int pid);
+
+void add_task(task_t* task);
+void remove_task_with_pid(int pid);
+
+void pause_task_with_pid(int pid);
+void resume_task_with_pid(int pid);
 
 #endif
