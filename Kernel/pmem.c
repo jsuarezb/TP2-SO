@@ -53,12 +53,15 @@ static uint64_t get_free_block(char * bitmap);
 // bit set to 0 when block is free, set to 1 when block is allocated
 static char * bitmap = (char *) 0x10000000;
 
+// Used to make allocation faster
+static int last_alloc = 0;
+
 void
 init_pmem()
 {
     int i;
 
-    for (i = 0; i < BLOCKS * BITS_IN_BYTE; i++)
+    for (i = 0; i < BITMAP_SIZE; i++)
         bitmap[i] = 0x00;
 }
 
@@ -143,22 +146,27 @@ set_block_status(char * bitmap, int status, void * address)
 static uint64_t
 get_free_block(char * bitmap)
 {
-    uint64_t i = 0, j = 0;
+    int has_searched = 0;
+    uint64_t i = last_alloc, j = 0;
 
-    while (i < BLOCKS) {
+    // Check if we've reached the first byte searched again
+    while (i != last_alloc || !has_searched) {
         if (bitmap[i] != 0xFF) {
             j = 0;
 
             while (j < BITS_IN_BYTE) {
                 if (get_block_status(bitmap, (void *) ((i + j) * BLOCK_SIZE))
-                        == FREE_BLOCK)
+                        == FREE_BLOCK) {
+                    last_alloc = i;
                     return i + j;
+                }
 
                 j++;
             }
         }
 
-        i++;
+        i = (i + 1) % (BITMAP_SIZE);
+        has_searched = 1;
     }
 
     return -1;

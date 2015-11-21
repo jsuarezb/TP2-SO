@@ -13,7 +13,8 @@
 #define FREE_BLOCK  0
 #define ALLC_BLOCK  1
 
-#define BITS_IN_BYTE 8
+#define BITS_IN_BYTE    8
+#define BITMAP_SIZE     (BLOCKS / BITS_IN_BYTE)
 
 /**
  * Alloc a block of physical memory

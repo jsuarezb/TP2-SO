@@ -146,7 +146,7 @@ get_physical_address(void * address)
 
     PTE e = get_pte(pml4_index, pdp_index, pd_index, pt_index);
 
-    return (void *) (e & (PAGE_BASE_ADDR_MASK & PAGE_BASE_ADDR_OFF));
+    return (void *) (e & (PAGE_BASE_ADDR_MASK << PAGE_BASE_ADDR_OFF));
 }
 
 static PML4E *

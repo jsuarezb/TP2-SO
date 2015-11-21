@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define PAGE_SIZE   (4 * 512)
+#define PAGE_SIZE   (4 * 1024)
 
 #define CR3_PCD     (1 << 4)
 #define CR3_PWT     (1 << 3)

@@ -145,11 +145,11 @@ main()
 
     init_paging();
 
-    char * a = kalloc();
-    a[0] = 'a';
+    int i = 0;
+    for (i = 0; i < 1000000; i++)
+        kalloc();
 
-    kfree(a);
-    a[1] = '2';
+    ncPrintHex(kalloc());
 
     while (1);
 

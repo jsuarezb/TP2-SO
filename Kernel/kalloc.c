@@ -1,10 +1,11 @@
 
+#include "include/kalloc.h"
 #include "include/pmem.h"
 #include "include/paging.h"
 #include <naiveConsole.h>
 
 // We start to give memory at the second half of the virtual address map
-static void * available_virtual_address = 0xFFFF800000000000;
+static void * available_virtual_address = HEAP_VIRTUAL_START;
 
 /**
  * Allocates a page and links it with a physical page
@@ -54,7 +55,7 @@ kalloc(void)
     uint64_t * block_address;
 
     // Point to a physical memory address, set it to present and
-    // return the virtual address used to set every level tables
+    // return the virtual address used to set every level
     block_address = pmem_alloc();
 
     PTE pte = create_pte((uint64_t) block_address >> 12, PAGE_US | PAGE_RW | PAGE_PRESENT);
@@ -78,9 +79,7 @@ kfree(void * virtual_address)
     PTE pte = get_pte(pml4_index, pdp_index, pd_index, pt_index);
 
     void * pmem_address = (void *) (pte & (PAGE_BASE_ADDR_MASK << PAGE_BASE_ADDR_OFF));
-
     set_pte(0, pml4_index, pdp_index, pd_index, pt_index);
-    pmem_free(pmem_address);
 
-    ncPrintHex(get_pte(pml4_index, pdp_index, pd_index, pt_index));
+    pmem_free(pmem_address);
 }
