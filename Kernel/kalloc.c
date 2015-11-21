@@ -41,7 +41,7 @@ void *
 virtual_kalloc(void * virtual_address)
 {
     int is_present;
-    void * address = virtual_address;
+    void * address;
 
     uint64_t pml4_index = ((uint64_t) virtual_address >> 39) & 0x1FF;
     uint64_t pdp_index = ((uint64_t) virtual_address >> 30) & 0x1FF;
@@ -87,5 +87,5 @@ virtual_kalloc(void * virtual_address)
     PTE pte = create_pte((uint64_t) block_address >> 12, PAGE_US | PAGE_RW | PAGE_PRESENT);
     set_pte(pte, pml4_index, pdp_index, pd_index, pt_index);
 
-    return virtual_address;
+    return (void *) (((uint64_t) virtual_address >> 12) << 12);
 }
