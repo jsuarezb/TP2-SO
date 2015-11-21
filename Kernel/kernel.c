@@ -135,6 +135,11 @@ void IDTinitialize()
 	_sti();
 }
 
+void initialize_task(int argc, char** argv) {
+	IDTinitialize();
+	while(1);
+}
+
 int main()
 {
 
@@ -147,7 +152,10 @@ int main()
     task_t* shell = create_task((void*)0x400000, 0, NULL);
 	add_task(shell);
 	ncPrint(" OK ");
-	ncPrintHex(shell);
+
+	// process que va a correr
+	task_t* init_task = create_task((void*)initialize_task, 0, NULL);
+	add_task(init_task);
 
 	init_paging();
 

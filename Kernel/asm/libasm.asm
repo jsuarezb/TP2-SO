@@ -199,7 +199,7 @@ _asm_set_cr3:
  ; Scheduler
 
  finalizeSetup:
- 	call IDTinitialize
+ 	;call IDTinitialize
  	
  	call switch_kernel_to_user
  	mov rsp, rax

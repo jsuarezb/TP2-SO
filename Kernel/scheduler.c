@@ -41,15 +41,26 @@ task_t* create_task(void* func, int argc, char**argv){
 	task->pid = pid;
 	task->entryPoint = func;
 	task->stack = stacks[pid] + STACK_SIZE;
+	task->state = TASK_UNAVAILABLE;
 
 	task_init(task, func, argc, argv);
 
 	return task;
 }
 
-void sched_init() {
+task_t* task_ready(task_t* task){
+	task->state = TASK_READY;
+}
 
-	_cli();
+task_t* task_pause(task_t* task){
+	task->state = TASK_PAUSED;
+}
+
+task_t* task_current(task_t* task){
+	task->state = TASK_CURRENT;
+}
+
+void sched_init() {
 
 	uint64_t stack_base = STACK_BASE;
 
@@ -57,12 +68,19 @@ void sched_init() {
 		stacks[i] = (stack_ptr)(stack_base + STACK_SIZE*i);
 	}
 
-	_sti();
 }
 
 stack_ptr switch_user_to_kernel(stack_ptr esp) {
 
 	current->stack = esp;
+
+/*	ncNewline();
+	ncPrint("u2k");
+	ncPrint("  ");
+	ncPrintHex(esp);
+	ncPrint("  ");
+	ncPrintDec(current->pid);
+	ncNewline(); */
 
 	return kernel_stack;
 }
@@ -71,8 +89,14 @@ stack_ptr switch_kernel_to_user(stack_ptr esp) {
 
 	schedule();
 
-	return current->stack;
+/*	ncPrint("k2u");
+	ncPrint("  ");
+	ncPrintHex(current->stack);
+	ncPrint("  ");
+	ncPrintDec(current->pid);
+	ncNewline(); */
 
+	return current->stack;
 }
 
 
