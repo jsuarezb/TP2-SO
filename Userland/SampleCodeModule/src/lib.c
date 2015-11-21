@@ -317,5 +317,47 @@ malloc(void)
 void
 free(void * address)
 {
-    return _sys_call(SYS_FREE, address, 0, 0);
+    _sys_call(SYS_FREE, address, 0, 0);
+}
+
+void *
+process_status(void)
+{
+    return _sys_call(SYS_PS, 0, 0, 0);
+}
+
+void *
+list_ipcs()
+{
+    return _sys_call(SYS_IPCS, 0, 0, 0);
+}
+
+int
+init_proc()
+{
+    return _sys_call(SYS_PROC_INIT, 0, 0, 0);
+}
+
+void
+kill_proc(int pid)
+{
+    _sys_call(SYS_PROC_KILL, pid, 0, 0);
+}
+
+void
+sleep_proc()
+{
+    _sys_call(SYS_PROC_SLEP, 0, 0, 0);
+}
+
+void
+signal_proc(int pid, int sig)
+{
+    _sys_call(SYS_PROC_SIGN, pid, sig, 0);
+}
+
+void
+yield_proc()
+{
+    _sys_call(SYS_PROC_YIELD, 0, 0, 0);
 }

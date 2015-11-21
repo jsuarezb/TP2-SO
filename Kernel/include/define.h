@@ -78,9 +78,16 @@
 #define SYS_TIME	0x0D
 #define SYS_STIME	0x19
 #define SYS_SCREENSAVER	0x20
-#define SYS_CPUVENDOR 0X24
+#define SYS_CPUVENDOR   0X24
+#define SYS_PROC_INIT   0x30
+#define SYS_PROC_KILL   0x31
+#define SYS_PROC_SLEP   0x32
+#define SYS_PROC_SIGN   0x33
+#define SYS_PROC_YIELD  0x34
 #define SYS_ALLOC   0x5A
 #define SYS_FREE    0x5B
+#define SYS_PS      0x60
+#define SYS_IPCS    0x61
 
 #define STDIN	0
 #define STDOUT	1

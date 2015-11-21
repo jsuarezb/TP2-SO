@@ -61,6 +61,44 @@ void to_c (int i, char* to );
 void to_hex( int i, char* to);
 int stoi(const char * str);
 
+/**
+ * Allocates a block of 4K and returns the address of the block
+ *
+ * @return a pointer to the start of the block
+ */
 void * malloc(void);
+
+/**
+ * Frees the allocated block pointed by the address
+ *
+ * @param address   linear address of the block
+ */
+void free(void * address);
+
+/**
+ * Returns a pointer to the list of processes.
+ * Remember to FREE the memory
+ *
+ * @returns a pointer to the memory where kernel will leave the process table
+ */
+void * process_status(void);
+
+/**
+ * Returns a pointer to the list of ipcs
+ * Remember to FREE the memory
+ *
+ * @returns a pointer to the memory where kernel will leave the ipcs list
+ */
+void * list_ipcs(void);
+
+int init_proc();
+
+void kill_proc(int pid);
+
+void sleep_proc();
+
+void signal_proc(int pid, int signal);
+
+void yield_proc();
 
 #endif

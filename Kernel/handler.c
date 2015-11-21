@@ -13,14 +13,71 @@ extern unsigned int showingScreensaver;
 extern unsigned int timerLimit;
 extern unsigned int timer;
 
+/**
+ * ALLOC syscall, allocates a block of memory
+ *
+ * @return the address of the block allocated
+ */
 static uint64_t syscall_kalloc(void);
 
+/**
+ * FREE syscall, free a block of memory
+ *
+ * @param address   address to free
+ */
 static void syscall_free(void * address);
+
+/**
+ * PS syscall, returns the process list
+ *
+ * @return a pointer to the list of processes
+ */
+static void * syscall_process_status(void);
+
+/**
+ * IPCS syscall, returns the ipcs list
+ *
+ * @return a pointer to the list of ipcs
+ */
+static void * syscall_ipcs(void);
+
+/**
+ * Returns the new process pid
+ *
+ * @return pid of the new process
+ */
+static int syscall_proc_init(void);
+
+/**
+ * Kills a process
+ *
+ * @param pid   pid of the process to kill
+ */
+static void syscall_proc_kill(int pid);
+
+/**
+ * Sleep a process
+ */
+static void syscall_proc_sleep(void);
+
+/**
+ * Sends a signal to a process and wake it up if it's sleeping
+ *
+ * @param pid       pid of the process to signal
+ * @param signal    signal to send
+ */
+static void syscall_proc_signal(int pid, int signal);
+
+/**
+ * Yield the CPU to the next process
+ */
+static void syscall_proc_yield(void);
 
 /*
  * Function to run on timer tick interruption
  */
-void timertickHandler()
+void
+timertickHandler()
 {
 	if (timer == 0) { // Screensaver state
 		if (!showingScreensaver) {
@@ -79,12 +136,37 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
 			cpuVendor((char *) arg1);
             break;
 
+        case SYS_PROC_INIT:
+            return syscall_proc_init();
+
+        case SYS_PROC_KILL:
+            syscall_proc_kill(arg1);
+            break;
+
+        case SYS_PROC_SLEP:
+            syscall_proc_sleep();
+            break;
+
+        case SYS_PROC_SIGN:
+            syscall_proc_signal(arg1, arg2);
+            break;
+
+        case SYS_PROC_YIELD:
+            syscall_proc_yield();
+            break;
+
         case SYS_ALLOC:
             return syscall_kalloc();
 
         case SYS_FREE:
             syscall_free((void *) arg1);
             break;
+
+        case SYS_PS:
+            return syscall_process_status();
+
+        case SYS_IPCS:
+            return syscall_ipcs();
 
 		default:
 			break;
@@ -103,4 +185,55 @@ static void
 syscall_free(void * address)
 {
     kfree(address);
+}
+
+static void *
+syscall_process_status(void)
+{
+    void * address = kalloc();
+
+    // TODO fill the address with details of processes
+
+    return address;
+}
+
+static void *
+syscall_ipcs(void)
+{
+    void * address = kalloc();
+
+    // TODO fill the address with details of ipcs
+
+    return address;
+}
+
+static int
+syscall_proc_init(void)
+{
+    // TODO
+    return 0;
+}
+
+static void
+syscall_proc_kill(int pid)
+{
+    // TODO
+}
+
+static void
+syscall_proc_sleep(void)
+{
+    // TODO
+}
+
+static void
+syscall_proc_signal(int pid, int signal)
+{
+    // TODO
+}
+
+static void
+syscall_proc_yield(void)
+{
+    // TODO
 }
