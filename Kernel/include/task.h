@@ -4,10 +4,12 @@
 typedef void* stack_ptr;
 
 #define MAX_TASKS	128
-#define STACK_BASE	0x80000000
+#define STACK_BASE	0x20000000
 #define STACK_SIZE	0x10000
 
 typedef struct{
+	uint64_t gs;
+	uint64_t fs;
 	uint64_t r15;
 	uint64_t r14;
 	uint64_t r13;

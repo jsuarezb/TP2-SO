@@ -7,26 +7,28 @@ void task_init(task_t* task, void* func, int argc, char** argv){
 	task->stack -= 0x20;	// making space to simulate context switching
 	context_t* context = (context_t*)task->stack;
 	
-	context->r15 = 0xA;
-	context->r14 = 0x2;
-	context->r13 = 0x3;
-	context->r12 = 0x4;
-	context->r11 = 0x5;
-	context->r10 = 0x6;
-	context->r9 = 0x7;
-	context->r8 = 0x8;
-	context->rsi = 0x9;
-	context->rdi = 0xA;
-	context->rbp = 0xB;
-	context->rdx = 0xC;
-	context->rcx = 0xD;
-	context->rbx = 0xE;
-	context->rax = 0xF;
+	context->gs = 0x01;
+	context->fs = 0x02;
+	context->r15 = 0x03;
+	context->r14 = 0x04;
+	context->r13 = 0x05;
+	context->r12 = 0x06;
+	context->r11 = 0x07;
+	context->r10 = 0x08;
+	context->r9 = 0x09;
+	context->r8 = 0xA;
+	context->rsi = 0xB;
+	context->rdi = 0xC;
+	context->rbp = 0xD;
+	context->rdx = 0xE;
+	context->rcx = 0xF;
+	context->rbx = 0x10;
+	context->rax = 0x11;
 
 	context->rip = func;	// we set the rip to the point where the process is
 	context->cs = 0x008;	// this 
 	context->rflags = 0x202; // and this are copied from other place
-	context->rsp = task->stack;
+	context->rsp = (uint64_t)&(context->base);
 	context->ss = 0x0;
 	context->base = 0x0;
 }

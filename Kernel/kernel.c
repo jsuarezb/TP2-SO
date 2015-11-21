@@ -137,7 +137,6 @@ void IDTinitialize()
 
 int main()
 {
-    _vClear();
 
     ncPrint("Starting scheduler");
     sched_init();
@@ -148,10 +147,11 @@ int main()
     task_t* shell = create_task((void*)0x400000, 0, NULL);
 	add_task(shell);
 	ncPrint(" OK ");
+	ncPrintHex(shell);
 
-	//init_paging();
+	init_paging();
 
-	//IDTinitialize();
+	_vClear();
 
 	finalizeSetup();
 

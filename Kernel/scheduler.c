@@ -2,10 +2,10 @@
 #include "scheduler.h"
 #include "include/lib.h"
 #include <naiveConsole.h>
+#include "video.h"
 
 static int current_pid = 0;
-task_t* current = 0;
-int isKernel = 1;
+task_t* current;
 
 stack_ptr stacks[MAX_TASKS];
 task_t tasks[MAX_TASKS];
@@ -36,15 +36,15 @@ void add_task(task_t* task){
 task_t* create_task(void* func, int argc, char**argv){
 
 	int pid = next_pid();
-	task_t task = tasks[pid];
-	task.next = 0;
-	task.pid = pid;
-	task.entryPoint = func;
-	task.stack = stacks[pid] + STACK_SIZE;
+	task_t* task = &tasks[pid];
+	task->next = 0;
+	task->pid = pid;
+	task->entryPoint = func;
+	task->stack = stacks[pid] + STACK_SIZE;
 
-	task_init(&task, func, argc, argv);
+	task_init(task, func, argc, argv);
 
-	return &task;
+	return task;
 }
 
 void sched_init() {
@@ -67,11 +67,12 @@ stack_ptr switch_user_to_kernel(stack_ptr esp) {
 	return kernel_stack;
 }
 
-stack_ptr switch_kernel_to_user(stack_ptr old_stack) {
+stack_ptr switch_kernel_to_user(stack_ptr esp) {
 
 	schedule();
 
 	return current->stack;
+
 }
 
 
