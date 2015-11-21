@@ -313,3 +313,9 @@ malloc(void)
 {
     return _sys_call(SYS_ALLOC, 0, 0, 0);
 }
+
+void
+free(void * address)
+{
+    return _sys_call(SYS_FREE, address, 0, 0);
+}

@@ -80,6 +80,7 @@
 #define SYS_SCREENSAVER	0x20
 #define SYS_CPUVENDOR 0X24
 #define SYS_ALLOC   0x5A
+#define SYS_FREE    0x5B
 
 #define STDIN	0
 #define STDOUT	1

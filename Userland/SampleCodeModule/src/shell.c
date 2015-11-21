@@ -106,7 +106,11 @@ void parseCommand(const char * line)
 		getCpuVendor();
 	} else if (strcmp(command, ALLOC_COMMAND) == 0) {
         void * add = malloc();
-        printf("%x\n", (uint64_t) add);
+        printf("Address allocated: %x\n", (uint64_t) add);
+        free(add);
+
+        add = malloc();
+        printf("Address allocated: %x\n", (uint64_t) add);
     } else {
 		printf("Command not found.\n");
 	}

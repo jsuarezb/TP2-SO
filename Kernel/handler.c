@@ -13,7 +13,9 @@ extern unsigned int showingScreensaver;
 extern unsigned int timerLimit;
 extern unsigned int timer;
 
-static uint64_t syscall_kalloc(void ** address);
+static uint64_t syscall_kalloc(void);
+
+static void syscall_free(void * address);
 
 /*
  * Function to run on timer tick interruption
@@ -78,7 +80,11 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
             break;
 
         case SYS_ALLOC:
-            return syscall_kalloc((void **) arg1);
+            return syscall_kalloc();
+
+        case SYS_FREE:
+            syscall_free((void *) arg1);
+            break;
 
 		default:
 			break;
@@ -88,7 +94,13 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
 }
 
 static uint64_t
-syscall_kalloc(void ** address)
+syscall_kalloc(void)
 {
     return kalloc();
+}
+
+static void
+syscall_free(void * address)
+{
+    kfree(address);
 }

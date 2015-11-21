@@ -10,6 +10,7 @@
 #define SYS_SCREENSAVER	0x20
 #define SYS_CPUVENDOR	0x24
 #define SYS_ALLOC   0x5A
+#define SYS_FREE    0x5B
 
 #define COMMAND_LINE_SIZE	77
 #define GET_DATE			0
