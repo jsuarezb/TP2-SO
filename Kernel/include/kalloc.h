@@ -2,6 +2,11 @@
 #ifndef _KALLOC_H
 #define _KALLOC_H
 
+/**
+ * Allocates a page virtually and returns the virtual address allocated
+ *
+ * @return a pointer to the 4kb page
+ */
 void * kalloc(void);
 
 /**

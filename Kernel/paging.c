@@ -3,6 +3,8 @@
 #include "include/paging.h"
 #include "include/naiveConsole.h"
 
+#include <stdint.h>
+
 static PML4E * get_pml4_table();
 
 static PDPE * get_pdp_table(int pml4_index);
@@ -17,14 +19,17 @@ static PDPE * pdpe_table1   = 0x801000;
 void
 init_paging(void)
 {
-    CR3 cr3 = create_cr3(0x800, 0);
-    pml4_table[0]   = create_pml4e(0x801, PAGE_US | PAGE_RW | PAGE_PRESENT);
+    CR3 cr3 = create_cr3((uint64_t) pml4_table >> 12, 0);
+    clear_page_entries(pml4_table);
 
-    // Mapt 4GB of memory
-    pdpe_table1[0]  = create_pdpe(0x000, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
-    pdpe_table1[1]  = create_pdpe(0x001, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
-    pdpe_table1[2]  = create_pdpe(0x002, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
-    pdpe_table1[3]  = create_pdpe(0x003, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
+    pml4_table[0]   = create_pml4e((uint64_t) pdpe_table1 >> 12, PAGE_US | PAGE_RW | PAGE_PRESENT);
+    clear_page_entries(pdpe_table1);
+
+    // Identity map 4GB of memory
+    pdpe_table1[0]  = create_pdpe(0x00, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
+    pdpe_table1[1]  = create_pdpe(0x01, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
+    pdpe_table1[2]  = create_pdpe(0x02, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
+    pdpe_table1[3]  = create_pdpe(0x03, PAGE_US | PAGE_RW | PAGE_PRESENT | PAGE_BOTTOM);
 
     _asm_set_cr3(cr3);
 }
@@ -89,33 +94,59 @@ set_pte(PTE entry, int pml4_index, int pdp_index, int pd_index, int pt_index)
 CR3
 create_cr3(uint64_t address, uint64_t flags)
 {
-    return flags | ((address << CR3_PML4_ADDR_OFF) & CR3_PML4_ADDR_MASK);
+    return flags | ((address & CR3_PML4_ADDR_MASK) << CR3_PML4_ADDR_OFF);
 }
 
 PML4E
 create_pml4e(uint64_t address, uint64_t flags)
 {
-    return flags | ((address << PAGE_BASE_ADDR_OFF) & PAGE_BASE_ADDR_MASK);
+    return flags | ((address & PAGE_BASE_ADDR_MASK) << PAGE_BASE_ADDR_OFF);
 }
 
 PDPE
 create_pdpe(uint64_t address, uint64_t flags)
 {
     return (flags & PAGE_BOTTOM
-        ? ((address << PAGE_1GB_BASE_ADDR_OFF) & PAGE_1GB_BASE_ADDR_MASK) | flags
-        : ((address << PAGE_BASE_ADDR_OFF) & PAGE_BASE_ADDR_MASK) | flags);
+        ? ((address & PAGE_1GB_BASE_ADDR_MASK) << PAGE_1GB_BASE_ADDR_OFF) | flags
+        : ((address & PAGE_BASE_ADDR_MASK) << PAGE_BASE_ADDR_OFF) | flags);
 }
 
 PDE
 create_pde(uint64_t address, uint64_t flags)
 {
-    return flags | ((address << PAGE_BASE_ADDR_OFF) & PAGE_BASE_ADDR_MASK);
+    return flags | ((address & PAGE_BASE_ADDR_MASK) << PAGE_BASE_ADDR_OFF);
 }
 
 PTE
 create_pte(uint64_t address, uint64_t flags)
 {
-    return flags | ((address << PAGE_BASE_ADDR_OFF) & PAGE_BASE_ADDR_MASK);
+    return flags | ((address & PAGE_BASE_ADDR_MASK) << PAGE_BASE_ADDR_OFF);
+}
+
+void
+clear_page_entries(uint64_t * address)
+{
+    if (address == 0)
+        return;
+
+    int i;
+    for (i = 0; i < 512; i++)
+        address[i] = 0;
+}
+
+void *
+get_physical_address(void * address)
+{
+    uint64_t paddress = 0;
+
+    int pml4_index = ((uint64_t) address >> 39) & 0x1FF;
+    int pdp_index = ((uint64_t) address >> 30) & 0x1FF;
+    int pd_index = ((uint64_t) address >> 21) & 0x1FF;
+    int pt_index = ((uint64_t) address >> 12) & 0x1FF;
+
+    PTE e = get_pte(pml4_index, pdp_index, pd_index, pt_index);
+
+    return (void *) (e & (PAGE_BASE_ADDR_MASK & PAGE_BASE_ADDR_OFF));
 }
 
 static PML4E *

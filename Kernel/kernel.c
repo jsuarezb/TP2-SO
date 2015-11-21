@@ -131,7 +131,8 @@ set_interruptions(int enable)
     return (flags & 0x200) != 0;
 }
 
-int main()
+int
+main()
 {
     _vClear();
 
@@ -144,10 +145,11 @@ int main()
 
     init_paging();
 
-    char * add1 = kalloc();
-    char * add2 = kalloc();
+    char * a = kalloc();
+    a[0] = 'a';
 
-    kfree(add2);
+    kfree(a);
+    a[1] = '2';
 
     while (1);
 

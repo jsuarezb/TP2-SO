@@ -1,7 +1,9 @@
 #ifndef _PAGING_H
 #define _PAGING_H
 
-#define PAGE_SIZE   (4 * 1024)
+#include <stdint.h>
+
+#define PAGE_SIZE   (4 * 512)
 
 #define CR3_PCD     (1 << 4)
 #define CR3_PWT     (1 << 3)
@@ -154,5 +156,13 @@ PDE create_pde(uint64_t address, uint64_t flags);
  * @param flags     pt entry flags
  */
 PTE create_pte(uint64_t address, uint64_t flags);
+
+
+/**
+ * Clears a page, setting every entry to 0
+ *
+ * @param base_address  Base address of the page
+ */
+void clear_page_entries(uint64_t * base_address);
 
 #endif

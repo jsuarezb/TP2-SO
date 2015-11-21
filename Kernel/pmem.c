@@ -51,9 +51,7 @@ static uint64_t get_free_block(char * bitmap);
 
 // Block bitmap;
 // bit set to 0 when block is free, set to 1 when block is allocated
-static char * bitmap = (char *) 0x10000000; // TODO use allocator
-
-static uint64_t offset = PMEM_OFFSET;
+static char * bitmap = (char *) 0x10000000;
 
 void
 init_pmem()
@@ -67,7 +65,7 @@ init_pmem()
 void
 pmem_free(void * address)
 {
-    address = (void *) (address - offset);
+    address = (void *) (address - PMEM_OFFSET);
     // TODO what should we do here
     if ((uint64_t) address >= MEM_SIZE)
         return;
@@ -97,7 +95,7 @@ pmem_alloc()
         set_block_status(bitmap, ALLC_BLOCK, address);
     }
 
-    return address + offset;
+    return address + PMEM_OFFSET;
 }
 
 static int
