@@ -56,7 +56,7 @@ static int syscall_proc_init(void);
 static void syscall_proc_kill(int pid);
 
 /**
- * Sleep a process
+ * Sleep the current process
  */
 static void syscall_proc_sleep(void);
 
