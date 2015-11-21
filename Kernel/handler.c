@@ -2,6 +2,7 @@
 #include "include/api.h"
 #include "include/define.h"
 #include "include/handler.h"
+#include "include/kalloc.h"
 #include "include/keyboard.h"
 #include "include/lib.h"
 #include "include/screensaver.h"
@@ -11,6 +12,8 @@ extern unsigned int tickCount;
 extern unsigned int showingScreensaver;
 extern unsigned int timerLimit;
 extern unsigned int timer;
+
+static uint64_t syscall_kalloc(void ** address);
 
 /*
  * Function to run on timer tick interruption
@@ -46,27 +49,46 @@ void keyboardHandler(unsigned char c)
 /*
  * Function to run on software interruption (int 80h)
  */
-void syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
+uint64_t
+syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
 {
 	switch (code) {
 		case SYS_READ:
 			read((unsigned int) arg1, (char *) arg2, (int) arg3);
-			break;
+            break;
+
 		case SYS_WRITE:
 			write((unsigned int) arg1, (char *) arg2, (int) arg3);
-			break;
+            break;
+
 		case SYS_TIME:
 			getRTC((date *) arg1);
-			break;
+            break;
+
 		case SYS_STIME:
 			setRTC((date *) arg1);
-			break;
+            break;
+
 		case SYS_SCREENSAVER:
 			setScreensaverTime((int) arg1);
+            break;
+
 		case SYS_CPUVENDOR:
 			cpuVendor((char *) arg1);
-			break;
+            break;
+
+        case SYS_ALLOC:
+            return syscall_kalloc((void **) arg1);
+
 		default:
 			break;
 	}
+
+    return 0;
+}
+
+static uint64_t
+syscall_kalloc(void ** address)
+{
+    return kalloc();
 }

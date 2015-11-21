@@ -9,6 +9,7 @@
 #define SYS_STIME	0x19
 #define SYS_SCREENSAVER	0x20
 #define SYS_CPUVENDOR	0x24
+#define SYS_ALLOC   0x5A
 
 #define COMMAND_LINE_SIZE	77
 #define GET_DATE			0
@@ -24,6 +25,7 @@
 #define GET_TIME_COMMAND	"time"
 #define SET_SCREENSAVER_COMMAND	"ss"
 #define GET_CPU_VENDOR_COMMAND	"cpuid"
+#define ALLOC_COMMAND       	"alloc"
 
 typedef struct date {
 	uint8_t year;
@@ -35,4 +37,3 @@ typedef struct date {
 } date;
 
 #endif
-

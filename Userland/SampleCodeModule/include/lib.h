@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void _sys_call( uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3 );
+uint64_t _sys_call( uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3 );
 
 /*
  * Writes a single character on screen
@@ -33,7 +33,7 @@ int sscanf(const char * src, const char * fmt, ...);
 /*
  * Stores int `i` representation on base `base` into `placeholder`
  */
-void itos(int i, int base, char * placeholder);
+void itos(uint64_t i, int base, char * placeholder);
 
 /*
  * Concats two strings and writes the concatenation on `to`
@@ -55,10 +55,12 @@ int strcmp(const char * str1, const char * str2);
 int cindex(char c, const char * str);
 
 void printf_v ( char* s, ... );
-int int_length ( int i );
+int int_length ( uint64_t i, int base );
 int strlen ( char* s );
 void to_c (int i, char* to );
 void to_hex( int i, char* to);
 int stoi(const char * str);
+
+void * malloc(void);
 
 #endif

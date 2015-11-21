@@ -7,7 +7,7 @@
 #define TRUE	!FALSE
 
 // Date
-#define SECOND 			0x00      
+#define SECOND 			0x00
 #define MINUTE 			0x02
 #define HOUR 			0x04
 #define DAY 			0x07
@@ -63,7 +63,7 @@
 #define CAPS_PRESSED	58
 #define CAPS_RELEASED	CAPS_PRESSED | RELEASE_FLAG
 #define CTRL_PRESSED	29
-#define CTRL_RELEASED	29 | RELEASE_FLAG 
+#define CTRL_RELEASED	29 | RELEASE_FLAG
 #define ALT_PRESSED		56
 #define ALT_RELEASED	56 | RELEASE_FLAG
 
@@ -79,6 +79,7 @@
 #define SYS_STIME	0x19
 #define SYS_SCREENSAVER	0x20
 #define SYS_CPUVENDOR 0X24
+#define SYS_ALLOC   0x5A
 
 #define STDIN	0
 #define STDOUT	1

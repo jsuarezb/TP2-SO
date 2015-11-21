@@ -44,7 +44,7 @@ void printf(char * s, ...)
 static void vprintf(char* s, va_list vl) {
 	char nextChar, cAux;
 	char * sAux;
-   	int i, iAux;
+   	uint64_t i, iAux;
 
    	for (i = 0; s[i] != '\0'; i++) {
    		if(s[i] == '%'){
@@ -53,8 +53,8 @@ static void vprintf(char* s, va_list vl) {
    				putChar('%');
    				break;
    			} else if (nextChar == 'd') {
-				iAux = va_arg(vl, int);
-				char istring[int_length(iAux)];
+				iAux = va_arg(vl, uint64_t);
+				char istring[int_length(iAux, 10) + 1];
 				itos(iAux, 10, istring);
 				putString(istring);
 				i++;
@@ -67,8 +67,8 @@ static void vprintf(char* s, va_list vl) {
 				putString(sAux);
 				i++;
    			} else if (nextChar == 'x') {
-   				iAux = va_arg(vl, int);
-   				char hex[int_length(i)];
+   				iAux = va_arg(vl, uint64_t);
+   				char hex[int_length(iAux, 16) + 1];
    				itos(iAux, 16, hex);
    				putString(hex);
    				i++;
@@ -77,7 +77,6 @@ static void vprintf(char* s, va_list vl) {
    			}
 		} else {
 			putChar(s[i]);
-
 		}
 	}
 }
@@ -223,10 +222,10 @@ void concat(char * first, char * second, char * to)
 }
 
 // to = placeHolder
-void itos (int i, int base, char * to)
+void itos (uint64_t i, int base, char * to)
 {
 	char const digits[] = "0123456789ABCDEF";
-	int aux = i;
+	uint64_t aux = i;
 
 	do {
 		aux /= base;
@@ -276,12 +275,14 @@ int stoi(const char * str)
 	return i;
 }
 
-int int_length ( int i ) {
+int int_length ( uint64_t i, int base ) {
 	int aux = 0;
+
 	do {
-		i = i / 10;
-		aux ++;
+		i = i / base;
+		aux++;
 	} while ( i != 0 );
+
 	return aux;
 }
 
@@ -305,4 +306,10 @@ int strcmp(const char * str1, const char * str2)
 int isDigit ( int n )
 {
 	return (n - '0' >= 0 && n - '0' <= 9);
+}
+
+void *
+malloc(void)
+{
+    return _sys_call(SYS_ALLOC, 0, 0, 0);
 }

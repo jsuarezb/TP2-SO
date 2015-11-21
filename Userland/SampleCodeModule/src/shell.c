@@ -104,7 +104,10 @@ void parseCommand(const char * line)
 			printf("Invalid argument\n");
 	} else if (strcmp(command, GET_CPU_VENDOR_COMMAND) == 0) {
 		getCpuVendor();
-	} else {
+	} else if (strcmp(command, ALLOC_COMMAND) == 0) {
+        void * add = malloc();
+        printf("%x\n", (uint64_t) add);
+    } else {
 		printf("Command not found.\n");
 	}
 

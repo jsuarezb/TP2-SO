@@ -156,13 +156,13 @@ void initialize_task() {
 }
 
 void shell_task(){
-	
+
 	// Remove the init_task
 	remove_task_with_pid(init_task_pid);
 
 	// Start the shell
 	((EntryPoint)sampleCodeModuleAddress)();
-	
+
 }
 
 int main()
@@ -188,8 +188,6 @@ int main()
 
     void * op = shm_open(0x20);
     void * ge = shm_get(0x20);
-    
-    while(1);
 
 	finalizeSetup();
 

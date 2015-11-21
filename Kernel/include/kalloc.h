@@ -2,7 +2,7 @@
 #ifndef _KALLOC_H
 #define _KALLOC_H
 
-#define HEAP_VIRTUAL_START  ((uint64_t) 0xFFFF800000000000)
+#define HEAP_VIRTUAL_START  ((void *) 0xFFFF800000000000)
 
 /**
  * Allocates a page virtually and returns the virtual address allocated

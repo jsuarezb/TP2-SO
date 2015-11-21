@@ -143,7 +143,7 @@ _irq01handler:
 ; and parameters in rdi, rsi, rdx, r10, r8 and r9
 ; We won't be using more than 3 params
 _int80handler:
-	pushaq
+;	pushaq
 
 	mov rcx, rdx
 	mov rdx, rsi
@@ -151,7 +151,7 @@ _int80handler:
 	mov rdi, rax
 	call syscallHandler
 
-	popaq
+;	popaq
 	iretq
 
 cpuVendor:
