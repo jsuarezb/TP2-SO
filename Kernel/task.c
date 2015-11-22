@@ -27,9 +27,9 @@ void task_init(task_t* task, void* func, int argc, char** argv){
 	context->rax = 0x11;
 
 	context->rip = func;	// we set the rip to the point where the process is
-	context->cs = 0x008;	// this 
+	context->cs = 0x008;	// this
 	context->rflags = 0x202; // and this are copied from other place
-	context->rsp = (uint64_t)&(context->base);
+	context->rsp = (uint64_t) &(context->base);
 	context->ss = 0x0;
 	context->base = 0x0;
 

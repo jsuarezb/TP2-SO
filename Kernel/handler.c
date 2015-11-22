@@ -75,24 +75,33 @@ static void syscall_proc_signal(int pid, int signal);
  */
 static void syscall_proc_yield(void);
 
-
 void
 pageFaultHandler(void * address){
 
     task_t* task = current_task();
 
-    uint64_t top = task->stack_base;
-    uint64_t bottom = task->stack_base - STACK_SIZE;
-    int is_inside = (uint64_t) address < top && (uint64_t) address > bottom;
+    uint64_t top_limit = (uint64_t) task->stack_base;
+    uint64_t bottom_limit = (uint64_t) task->stack_base - STACK_SIZE;
 
-    if(is_inside) {
-        virtual_kalloc(address);
+    int is_inside = (uint64_t) address <= top_limit
+        && (uint64_t) address >= bottom_limit;
+
+    ncPrint("Top limit: "); ncPrintHex(top_limit); ncNewline();
+    ncPrint("Bottom limit: "); ncPrintHex(bottom_limit); ncNewline();
+    ncPrint("Address accessed: "); ncPrintHex(address); ncNewline();
+    ncPrint("RSP: "); ncPrintHex(task->stack); ncNewline();
+
+    if (is_inside) {
+        void * a = virtual_kalloc(address);
+        ncPrintHex(a);
+
     } else  {
         // TODO what to do?
         ncPrint("error");
-    }
 
-    while (1);
+        _cli();
+        hlt();
+    }
 }
 
 /*

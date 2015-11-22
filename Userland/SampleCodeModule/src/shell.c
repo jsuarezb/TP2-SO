@@ -35,9 +35,22 @@ static void setScreensaver(int seconds);
 
 static void getCpuVendor();
 
+static void stack_overflow(void);
+
+
+void
+stack_overflow(void)
+{
+    int i = 0;
+
+    printf("%x\n", &i);
+}
+
 void start_shell()
 {
 	char c;
+
+    stack_overflow();
 
 	printLineStart();
 	// Main loop

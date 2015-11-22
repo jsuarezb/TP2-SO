@@ -5,6 +5,7 @@ GLOBAL _exc14handler
 GLOBAL _int80handler
 GLOBAL _sti
 GLOBAL _cli
+GLOBAL hlt
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
 GLOBAL finalizeSetup
@@ -151,8 +152,9 @@ _exc14handler:
 	out PIC_MASTER_CONTROL, al ; and PIC can recieve the next one
 
 	popaq
-    pop rax
     
+    pop rdx ; pop page fault error
+
 	iretq
 
 ; System call
@@ -232,3 +234,7 @@ finalizeSetup:
 
  	call get_entry_point
  	jmp rax
+
+hlt:
+    nop
+    jmp hlt

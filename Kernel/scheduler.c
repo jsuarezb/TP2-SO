@@ -29,21 +29,21 @@ next_pid(){
  * Initializes the scheduler
  */
 
-void 
-sched_init() {
+void
+sched_init()
+{
+    uint64_t stack_end = STACK_END;
 
-	uint64_t stack_end = STACK_END;
-
-	for(int i = 0; i<MAX_TASKS; i++){
+	for(int i = 0; i<MAX_TASKS; i++)
 		stacks[i] = (stack_ptr)(stack_end - STACK_SIZE*i);
-	}
+
 }
 
 /**
  * Schedules the first available task that's ready
  */
 
-void 
+void
 schedule(){
 	current = current->next;
 
@@ -60,7 +60,7 @@ schedule(){
  * return the task with the pid, -1 if not found
  */
 
-task_t* 
+task_t*
 find_task_with_pid(int pid) {
 
 	int inital_pid = current->pid;
@@ -85,7 +85,7 @@ find_task_with_pid(int pid) {
  * return the curernt running task
  */
 
-task_t* 
+task_t*
 current_task() {
 	return current;
 }
@@ -97,7 +97,7 @@ current_task() {
  *
  */
 
-void 
+void
 pause_task_with_pid(int pid){
 
 	task_t* task = find_task_with_pid(pid);
@@ -115,7 +115,7 @@ pause_task_with_pid(int pid){
  *
  */
 
-void 
+void
 resume_task_with_pid(int pid){
 
 	task_t* task = find_task_with_pid(pid);
@@ -133,7 +133,7 @@ resume_task_with_pid(int pid){
  *
  */
 
-void 
+void
 add_task(task_t* task){
 
 	if(current == 0){
@@ -154,7 +154,7 @@ add_task(task_t* task){
  *
  */
 
-void 
+void
 remove_task_with_pid(int pid){
 
 	task_t* tr = find_task_with_pid(pid);
@@ -182,7 +182,7 @@ remove_task_with_pid(int pid){
  * return new task
  */
 
-task_t* 
+task_t*
 create_task(void* func, int argc, char**argv){
 
 	int pid = next_pid();
@@ -208,23 +208,23 @@ create_task(void* func, int argc, char**argv){
  * asm functions
  */
 
-stack_ptr 
-switch_user_to_kernel(stack_ptr esp) {
-
+stack_ptr
+switch_user_to_kernel(stack_ptr esp)
+{
 	current->stack = esp;
 
 	return kernel_stack;
 }
 
-stack_ptr 
-switch_kernel_to_user(stack_ptr esp) {
-
+stack_ptr
+switch_kernel_to_user(stack_ptr esp)
+{
 	schedule();
 
 	return current->stack;
 }
 
-stack_ptr 
+stack_ptr
 get_entry_point(){
 	return current->entryPoint;
 }

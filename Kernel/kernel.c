@@ -168,6 +168,8 @@ int main()
 {
 	setupIDTentry(PAGE_FAULT, 0x08, &_exc14handler, 0x8E);
 
+	init_paging();
+
     ncPrint("Starting scheduler");
     sched_init();
     ncPrint(" OK ");
@@ -183,7 +185,6 @@ int main()
 	add_task(init_task);
 	init_task_pid = init_task->pid;
 
-	init_paging();
 	_vClear();
 
 	finalizeSetup();
