@@ -34,6 +34,10 @@ kfree(void * virtual_address)
     void * pmem_address = (void *) (pte & (PAGE_BASE_ADDR_MASK << PAGE_BASE_ADDR_OFF));
     set_pte(0, pml4_index, pdp_index, pd_index, pt_index);
 
+    // Flush table cache
+    uint64_t cr3 = _asm_get_cr3();
+    _asm_set_cr3(cr3);
+
     pmem_free(pmem_address);
 }
 

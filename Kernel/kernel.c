@@ -162,11 +162,12 @@ void shell_task(){
 
 int main()
 {
-
     ncPrint("Starting pmem...");
     init_pmem();
     ncPrint(" OK");
     ncNewline();
+
+	init_paging();
 
     ncPrint("Starting scheduler");
     sched_init();
@@ -182,8 +183,6 @@ int main()
 	task_t* init_task = create_task((void*)initialize_task, 0, NULL);
 	add_task(init_task);
 	init_task_pid = init_task->pid;
-
-	init_paging();
 
 	_vClear();
 
