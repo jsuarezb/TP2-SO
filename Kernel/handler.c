@@ -6,6 +6,7 @@
 #include "include/keyboard.h"
 #include "include/lib.h"
 #include "include/screensaver.h"
+#include "include/task.h"
 #include "include/video.h"
 
 extern unsigned int tickCount;
@@ -46,7 +47,7 @@ static void * syscall_ipcs(void);
  *
  * @return pid of the new process
  */
-static int syscall_proc_init(void);
+static int syscall_proc_init(void * func, int argc, char ** argv);
 
 /**
  * Kills a process
@@ -64,9 +65,8 @@ static void syscall_proc_sleep(void);
  * Sends a signal to a process and wake it up if it's sleeping
  *
  * @param pid       pid of the process to signal
- * @param signal    signal to send
  */
-static void syscall_proc_signal(int pid, int signal);
+static void syscall_proc_signal(int pid);
 
 /**
  * Yield the CPU to the next process
@@ -137,7 +137,7 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
             break;
 
         case SYS_PROC_INIT:
-            return syscall_proc_init();
+            return syscall_proc_init((void *) arg1, arg2, arg3);
 
         case SYS_PROC_KILL:
             syscall_proc_kill(arg1);
@@ -148,7 +148,7 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
             break;
 
         case SYS_PROC_SIGN:
-            syscall_proc_signal(arg1, arg2);
+            syscall_proc_signal(arg1);
             break;
 
         case SYS_PROC_YIELD:
@@ -208,28 +208,33 @@ syscall_ipcs(void)
 }
 
 static int
-syscall_proc_init(void)
+syscall_proc_init(void * func, int argc, char ** argv)
 {
-    // TODO
+    task_t * task = create_task(func, argc, argv);
+    add_task(task);
+
     return 0;
 }
 
 static void
 syscall_proc_kill(int pid)
 {
-    // TODO
+    remove_task_with_pid(pid);
 }
 
 static void
 syscall_proc_sleep(void)
 {
-    // TODO
+    task_t * task = get_current_task();
+    int pid = task->pid;
+    
+    pause_task_with_pid(pid);
 }
 
 static void
-syscall_proc_signal(int pid, int signal)
+syscall_proc_signal(int pid)
 {
-    // TODO
+    signal_task(pid);
 }
 
 static void

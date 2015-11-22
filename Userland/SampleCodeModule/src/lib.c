@@ -333,9 +333,10 @@ list_ipcs()
 }
 
 int
-init_proc()
+init_proc(void * func)
 {
-    return _sys_call(SYS_PROC_INIT, 0, 0, 0);
+    // TODO change argc and argv
+    return _sys_call(SYS_PROC_INIT, func, 0, 0);
 }
 
 void
@@ -351,9 +352,9 @@ sleep_proc()
 }
 
 void
-signal_proc(int pid, int sig)
+signal_proc(int pid)
 {
-    _sys_call(SYS_PROC_SIGN, pid, sig, 0);
+    _sys_call(SYS_PROC_SIGN, pid, 0, 0);
 }
 
 void

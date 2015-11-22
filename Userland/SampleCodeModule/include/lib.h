@@ -97,7 +97,7 @@ void kill_proc(int pid);
 
 void sleep_proc();
 
-void signal_proc(int pid, int signal);
+void signal_proc(int pid);
 
 void yield_proc();
 

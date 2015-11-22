@@ -7,6 +7,8 @@
 
 void sched_init();
 
+task_t * get_current_task(void);
+
 task_t* create_task(void* func, int argc, char**argv);
 
 task_t* find_task_with_pid(int pid);

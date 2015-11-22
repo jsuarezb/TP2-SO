@@ -167,7 +167,10 @@ int main()
     ncPrint(" OK");
     ncNewline();
 
+    ncPrint("Starting vmem...");
 	init_paging();
+    ncPrint(" OK");
+    ncNewline();
 
     ncPrint("Starting scheduler");
     sched_init();

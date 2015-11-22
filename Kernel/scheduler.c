@@ -37,6 +37,15 @@ void sched_init() {
 }
 
 /**
+ * Returns the current task
+ */
+task_t *
+get_current_task(void)
+{
+    return current;
+}
+
+/**
  * Schedules the first available task that's ready
  */
 
@@ -163,7 +172,7 @@ void remove_task_with_pid(int pid){
  * return new task
  */
 
-task_t* create_task(void* func, int argc, char**argv){
+task_t* create_task(void * func, int argc, char**argv){
 
 	int pid = next_pid();
 
@@ -178,6 +187,21 @@ task_t* create_task(void* func, int argc, char**argv){
 	task_init(task, func, argc, argv);
 
 	return task;
+}
+
+
+/**
+ * Sends a signal to a process
+ *
+ * @param pid   pid of the process
+ */
+void
+signal_task(int pid)
+{
+    task_t * task = find_task_with_pid(pid);
+    resume_task_with_pid(pid);
+
+    return;
 }
 
 /*

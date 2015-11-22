@@ -47,7 +47,7 @@ struct task_t {
 	int pid;
 
 	stack_ptr stack;
-	
+
 	task_t* next;
 	void* entryPoint;
 

@@ -35,6 +35,21 @@ static void setScreensaver(int seconds);
 
 static void getCpuVendor();
 
+static void loop();
+
+static int i = 0;
+
+void
+loop()
+{
+    int a = i++;
+
+    while (a++ < 0xFFFFFFFFFFFF)
+        printf("%d\n", a);
+
+    while (1);
+}
+
 void start_shell()
 {
 	char c;
@@ -105,12 +120,7 @@ void parseCommand(const char * line)
 	} else if (strcmp(command, GET_CPU_VENDOR_COMMAND) == 0) {
 		getCpuVendor();
 	} else if (strcmp(command, ALLOC_COMMAND) == 0) {
-        void * add = malloc();
-        printf("Address allocated: %x\n", (uint64_t) add);
-        free(add);
-
-        add = malloc();
-        printf("Address allocated: %x\n", (uint64_t) add);
+        init_proc(loop);
     } else {
 		printf("Command not found.\n");
 	}
