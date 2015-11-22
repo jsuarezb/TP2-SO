@@ -49,12 +49,14 @@ struct task_t {
 	stack_ptr stack;
 
 	task_t* next;
-	void* entryPoint;
+	void (*entryPoint)(int, char**);
 
 	task_state_t state;
 };
 
-void task_init(task_t* task, void* func, int argc, char** argv);
+void task_init(task_t* task, void (*func)(int, char**), int argc, char** argv);
+
+void task_wrapper(void (*func)(int, char **), int argc, char ** argv);
 
 task_t* task_ready(task_t* task);
 task_t* task_pause(task_t* task);

@@ -10,6 +10,8 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 void _cli(void);
 void _sti(void);
 
+int SetInts(int);
+
 void _irq00handler();
 void _irq01handler();
 void _int80handler();

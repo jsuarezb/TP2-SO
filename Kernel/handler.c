@@ -47,7 +47,7 @@ static void * syscall_ipcs(void);
  *
  * @return pid of the new process
  */
-static int syscall_proc_init(void * func, int argc, char ** argv);
+static int syscall_proc_init(void (*func)(int, char **), int argc, char ** argv);
 
 /**
  * Kills a process
@@ -208,7 +208,7 @@ syscall_ipcs(void)
 }
 
 static int
-syscall_proc_init(void * func, int argc, char ** argv)
+syscall_proc_init(void (*func)(int, char **), int argc, char ** argv)
 {
     task_t * task = create_task(func, argc, argv);
     add_task(task);
@@ -227,7 +227,7 @@ syscall_proc_sleep(void)
 {
     task_t * task = get_current_task();
     int pid = task->pid;
-    
+
     pause_task_with_pid(pid);
 }
 

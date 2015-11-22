@@ -150,10 +150,11 @@ void initialize_task() {
 	while(1);
 }
 
-void shell_task(){
+void
+shell_task(int argc, char ** argv){
 
 	// Remove the init_task
-	remove_task_with_pid(init_task_pid);
+	// remove_task_with_pid(init_task_pid);
 
 	// Start the shell
 	((EntryPoint)sampleCodeModuleAddress)();
@@ -178,7 +179,7 @@ int main()
     ncNewline();
 
     ncPrint("Creating shell");
-    task_t* shell = create_task((void*)shell_task, 0, NULL);
+    task_t* shell = create_task(shell_task, 0, NULL);
     add_task(shell);
 	ncPrint(" OK ");
 

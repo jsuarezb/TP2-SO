@@ -49,13 +49,17 @@ get_current_task(void)
  * Schedules the first available task that's ready
  */
 
-void schedule(){
+void schedule()
+{
+
+    int i = SetInts(0);
 
 	current = current->next;
 
 	while(current->state == TASK_PAUSED)
 		current = current->next;
 
+    SetInts(i);
 }
 
 /**
@@ -93,12 +97,14 @@ task_t* find_task_with_pid(int pid){
 
 void pause_task_with_pid(int pid){
 
+    int i = SetInts(0);
+
 	task_t* task = find_task_with_pid(pid);
 
-	if(task != -1){
+	if(task != -1)
 		task_pause(task);
-	}
 
+    SetInts(i);
 }
 
 /**
@@ -110,12 +116,14 @@ void pause_task_with_pid(int pid){
 
 void resume_task_with_pid(int pid){
 
+    int i = SetInts(0);
+
 	task_t* task = find_task_with_pid(pid);
 
-	if(task != -1){
+	if(task != -1)
 		task_ready(task);
-	}
 
+    SetInts(i);
 }
 
 /**
@@ -127,6 +135,8 @@ void resume_task_with_pid(int pid){
 
 void add_task(task_t* task){
 
+    int i = SetInts(0);
+
 	if(current == 0){
 		current = task;
 		current->next = current;
@@ -135,6 +145,8 @@ void add_task(task_t* task){
 		current->next = task;
 		task->next = tmp;
 	}
+
+    SetInts(i);
 
 }
 
@@ -147,19 +159,20 @@ void add_task(task_t* task){
 
 void remove_task_with_pid(int pid){
 
+    int i = SetInts(0);
+
 	task_t* tr = find_task_with_pid(pid);
 
-	if(tr == -1){
-		return;
-	}
+	if (tr != -1) {
+    	task_t* pr = tr->next;
 
-	task_t* pr = tr->next;
+    	while(pr->next->pid != pid)
+    		pr = pr->next;
 
-	while(pr->pid != pid){
-		pr = pr->next;
-	}
+    	pr->next = tr->next;
+    }
 
-	pr->next = tr->next;
+    SetInts(i);
 }
 
 /**
@@ -172,21 +185,26 @@ void remove_task_with_pid(int pid){
  * return new task
  */
 
-task_t* create_task(void * func, int argc, char**argv){
+task_t* create_task(void (*func)(int, char **), int argc, char**argv){
+
+    int i = SetInts(0);
 
 	int pid = next_pid();
 
-	if(pid == -1)
-		return -1;
+    task_t * task;
 
-	task_t* task = &tasks[pid];
-	task->next = 0;
-	task->pid = pid;
-	task->stack = stacks[pid] + STACK_SIZE;
+	if (pid != -1) {
+    	task = &tasks[pid];
+    	task->next = 0;
+    	task->pid = pid;
+    	task->stack = stacks[pid] + STACK_SIZE;
 
-	task_init(task, func, argc, argv);
+    	task_init(task, func, argc, argv);
+    }
 
-	return task;
+    SetInts(i);
+
+	return pid == -1 ? -1 : task;
 }
 
 
@@ -210,7 +228,9 @@ signal_task(int pid)
 
 stack_ptr switch_user_to_kernel(stack_ptr esp) {
 
+    int i = SetInts(0);
 	current->stack = esp;
+    SetInts(i);
 
 	return kernel_stack;
 }

@@ -48,3 +48,18 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 
 	return destination;
 }
+
+
+// Sacado de mtask
+int
+SetInts(int enabled)
+{
+	uint64_t flags = _asm_get_eflags();
+    
+	if ( enabled )
+		_sti();
+	else
+		_cli();
+
+	return (flags & 0x200) != 0;
+}

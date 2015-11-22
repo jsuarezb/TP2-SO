@@ -333,7 +333,7 @@ list_ipcs()
 }
 
 int
-init_proc(void * func)
+init_proc(void (*func)(int, char **))
 {
     // TODO change argc and argv
     return _sys_call(SYS_PROC_INIT, func, 0, 0);

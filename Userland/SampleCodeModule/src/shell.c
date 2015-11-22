@@ -39,16 +39,7 @@ static void loop();
 
 static int i = 0;
 
-void
-loop()
-{
-    int a = i++;
-
-    while (a++ < 0xFFFFFFFFFFFF)
-        printf("%d\n", a);
-
-    while (1);
-}
+static void alloc_main(int argc, char ** argv);
 
 void start_shell()
 {
@@ -120,7 +111,7 @@ void parseCommand(const char * line)
 	} else if (strcmp(command, GET_CPU_VENDOR_COMMAND) == 0) {
 		getCpuVendor();
 	} else if (strcmp(command, ALLOC_COMMAND) == 0) {
-        init_proc(loop);
+        init_proc(alloc_main);
     } else {
 		printf("Command not found.\n");
 	}
@@ -247,4 +238,15 @@ static void getCpuVendor()
 	_sys_call(SYS_CPUVENDOR, (uint64_t) vendor, 0, 0);
 	vendor[12] = '\0';
 	printf("%s\n", vendor);
+}
+
+void
+alloc_main(int argc, char ** argv)
+{
+    int a = i++;
+
+    while (a++ < 10000000 * 10)
+        if (a % 10000000 == 0)
+            printf("%d\n", a);
+
 }

@@ -113,8 +113,6 @@ _irq00handler:
 
 	mov rsp, rax
 
-	call timertickHandler
-
 	call switch_kernel_to_user
 
 	mov rsp, rax
