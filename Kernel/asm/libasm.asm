@@ -144,10 +144,16 @@ _irq01handler:
 _exc14handler:
 	pushaq
 
-	mov rdi, rdx
+	mov rdi, cr2
 	call pageFaultHandler
 
-	END_INT
+	mov al, 20h ; Acknowledge interruption was treated
+	out PIC_MASTER_CONTROL, al ; and PIC can recieve the next one
+
+	popaq
+    pop rax
+    
+	iretq
 
 ; System call
 ; recieves the system call code in rax

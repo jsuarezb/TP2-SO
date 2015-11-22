@@ -77,19 +77,22 @@ static void syscall_proc_yield(void);
 
 
 void
-pageFaultHandler(void* address){
+pageFaultHandler(void * address){
 
     task_t* task = current_task();
 
-    int64_t dif = task->stack_base - address;
+    uint64_t top = task->stack_base;
+    uint64_t bottom = task->stack_base - STACK_SIZE;
+    int is_inside = (uint64_t) address < top && (uint64_t) address > bottom;
 
-    if(0<=dif<STACK_SIZE) {
+    if(is_inside) {
         virtual_kalloc(address);
     } else  {
-        ncPrint("error");
         // TODO what to do?
+        ncPrint("error");
     }
 
+    while (1);
 }
 
 /*
