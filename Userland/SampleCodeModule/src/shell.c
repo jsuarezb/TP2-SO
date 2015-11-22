@@ -50,7 +50,7 @@ void start_shell()
 {
 	char c;
 
-    stack_overflow();
+    //stack_overflow();
 
 	printLineStart();
 	// Main loop
