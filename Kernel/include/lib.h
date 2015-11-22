@@ -9,10 +9,12 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 
 void _cli(void);
 void _sti(void);
+void hlt(void);
 
 void _irq00handler();
 void _irq01handler();
 void _int80handler();
+void _exc14handler();
 void picMasterMask(uint16_t);
 void picSlaveMask(uint16_t);
 

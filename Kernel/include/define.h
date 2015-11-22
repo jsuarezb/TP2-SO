@@ -100,6 +100,7 @@
 #define IDT_OFFSET	0x20 // Pure64 interruptions offset
 #define TIMER_TICK	IDT_OFFSET + 0x00
 #define KEYBOARD	IDT_OFFSET + 0x01
+#define PAGE_FAULT	0x0E
 #define SYSCALL		0x80
 
 /*

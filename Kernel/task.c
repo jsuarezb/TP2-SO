@@ -1,12 +1,13 @@
 #include <stdint.h>
 #include "task.h"
 #include "pmem.h"
+#include "paging.h"
 
 void task_init(task_t* task, void* func, int argc, char** argv){
 
 	task->stack -= 0x20;	// making space to simulate context switching
 	context_t* context = (context_t*)task->stack;
-	
+
 	context->gs = 0x01;
 	context->fs = 0x02;
 	context->r15 = 0x03;
@@ -26,9 +27,9 @@ void task_init(task_t* task, void* func, int argc, char** argv){
 	context->rax = 0x11;
 
 	context->rip = func;	// we set the rip to the point where the process is
-	context->cs = 0x008;	// this 
+	context->cs = 0x008;	// this
 	context->rflags = 0x202; // and this are copied from other place
-	context->rsp = (uint64_t)&(context->base);
+	context->rsp = context;
 	context->ss = 0x0;
 	context->base = 0x0;
 
