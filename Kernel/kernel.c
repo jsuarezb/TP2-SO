@@ -162,11 +162,11 @@ void shell_task(){
 
 	// Start the shell
 	((EntryPoint)sampleCodeModuleAddress)();
-
 }
 
 int main()
 {
+	setupIDTentry(PAGE_FAULT, 0x08, &_exc14handler, 0x8E);
 
     ncPrint("Starting scheduler");
     sched_init();
@@ -175,7 +175,7 @@ int main()
 
     ncPrint("Creating shell");
     task_t* shell = create_task((void*)shell_task, 0, NULL);
-    add_task(shell);
+	add_task(shell);
 	ncPrint(" OK ");
 
 	// Task to initialize the IDT

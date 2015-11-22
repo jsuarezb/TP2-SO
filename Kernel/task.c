@@ -1,12 +1,13 @@
 #include <stdint.h>
 #include "task.h"
 #include "pmem.h"
+#include "paging.h"
 
 void task_init(task_t* task, void* func, int argc, char** argv){
 
 	task->stack -= 0x20;	// making space to simulate context switching
 	context_t* context = (context_t*)task->stack;
-	
+
 	context->gs = 0x01;
 	context->fs = 0x02;
 	context->r15 = 0x03;

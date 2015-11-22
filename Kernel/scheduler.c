@@ -1,8 +1,10 @@
 #include <stdint.h>
-#include "scheduler.h"
+#include "include/scheduler.h"
 #include "include/lib.h"
 #include <naiveConsole.h>
 #include "video.h"
+#include "include/task.h"
+#include "include/paging.h"
 
 static int current_pid = -1;
 task_t* current;
@@ -12,7 +14,8 @@ task_t tasks[MAX_TASKS];
 
 extern stack_ptr kernel_stack;
 
-static int next_pid(){
+static int
+next_pid(){
 
 	current_pid++;
 
@@ -26,22 +29,22 @@ static int next_pid(){
  * Initializes the scheduler
  */
 
-void sched_init() {
+void 
+sched_init() {
 
-	uint64_t stack_base = STACK_BASE;
+	uint64_t stack_end = STACK_END;
 
 	for(int i = 0; i<MAX_TASKS; i++){
-		stacks[i] = (stack_ptr)(stack_base + STACK_SIZE*i);
+		stacks[i] = (stack_ptr)(stack_end - STACK_SIZE*i);
 	}
-
 }
 
 /**
  * Schedules the first available task that's ready
  */
 
-void schedule(){
-
+void 
+schedule(){
 	current = current->next;
 
 	while(current->state == TASK_PAUSED)
@@ -57,7 +60,8 @@ void schedule(){
  * return the task with the pid, -1 if not found
  */
 
-task_t* find_task_with_pid(int pid){
+task_t* 
+find_task_with_pid(int pid) {
 
 	int inital_pid = current->pid;
 
@@ -76,13 +80,25 @@ task_t* find_task_with_pid(int pid){
 }
 
 /**
+ * Returns the current running task
+ *
+ * return the curernt running task
+ */
+
+task_t* 
+current_task() {
+	return current;
+}
+
+/**
  * Pauses the task with pid
  *
  * @params pid Process id of the task you pause
  *
  */
 
-void pause_task_with_pid(int pid){
+void 
+pause_task_with_pid(int pid){
 
 	task_t* task = find_task_with_pid(pid);
 
@@ -99,7 +115,8 @@ void pause_task_with_pid(int pid){
  *
  */
 
-void resume_task_with_pid(int pid){
+void 
+resume_task_with_pid(int pid){
 
 	task_t* task = find_task_with_pid(pid);
 
@@ -116,7 +133,8 @@ void resume_task_with_pid(int pid){
  *
  */
 
-void add_task(task_t* task){
+void 
+add_task(task_t* task){
 
 	if(current == 0){
 		current = task;
@@ -136,7 +154,8 @@ void add_task(task_t* task){
  *
  */
 
-void remove_task_with_pid(int pid){
+void 
+remove_task_with_pid(int pid){
 
 	task_t* tr = find_task_with_pid(pid);
 
@@ -163,7 +182,8 @@ void remove_task_with_pid(int pid){
  * return new task
  */
 
-task_t* create_task(void* func, int argc, char**argv){
+task_t* 
+create_task(void* func, int argc, char**argv){
 
 	int pid = next_pid();
 
@@ -173,7 +193,11 @@ task_t* create_task(void* func, int argc, char**argv){
 	task_t* task = &tasks[pid];
 	task->next = 0;
 	task->pid = pid;
-	task->stack = stacks[pid] + STACK_SIZE;
+
+	virtual_kalloc(stacks[pid]);
+
+	task->stack_base = stacks[pid];
+	task->stack = stacks[pid];
 
 	task_init(task, func, argc, argv);
 
@@ -184,20 +208,23 @@ task_t* create_task(void* func, int argc, char**argv){
  * asm functions
  */
 
-stack_ptr switch_user_to_kernel(stack_ptr esp) {
+stack_ptr 
+switch_user_to_kernel(stack_ptr esp) {
 
 	current->stack = esp;
 
 	return kernel_stack;
 }
 
-stack_ptr switch_kernel_to_user(stack_ptr esp) {
+stack_ptr 
+switch_kernel_to_user(stack_ptr esp) {
 
 	schedule();
 
 	return current->stack;
 }
 
-stack_ptr get_entry_point(){
+stack_ptr 
+get_entry_point(){
 	return current->entryPoint;
 }

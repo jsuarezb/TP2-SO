@@ -1,6 +1,7 @@
 GLOBAL cpuVendor
 GLOBAL _irq00handler
 GLOBAL _irq01handler
+GLOBAL _exc14handler
 GLOBAL _int80handler
 GLOBAL _sti
 GLOBAL _cli
@@ -63,6 +64,7 @@ GLOBAL _asm_get_eflags
 EXTERN keyboardHandler
 EXTERN timertickHandler
 EXTERN syscallHandler
+EXTERN pageFaultHandler
 EXTERN _vWrite
 EXTERN switch_user_to_kernel
 EXTERN switch_kernel_to_user
@@ -135,6 +137,15 @@ _irq01handler:
 	out KBD_STATUS, al
 	and al, 7Fh
 	out KBD_STATUS, al
+
+	END_INT
+
+; Page fault
+_exc14handler:
+	pushaq
+
+	mov rdi, rdx
+	call pageFaultHandler
 
 	END_INT
 

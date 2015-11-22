@@ -13,6 +13,7 @@ void _sti(void);
 void _irq00handler();
 void _irq01handler();
 void _int80handler();
+void _exc14handler();
 void picMasterMask(uint16_t);
 void picSlaveMask(uint16_t);
 

@@ -6,6 +6,8 @@
 #include "include/keyboard.h"
 #include "include/lib.h"
 #include "include/screensaver.h"
+#include "include/task.h"
+#include "include/scheduler.h"
 #include "include/video.h"
 
 extern unsigned int tickCount;
@@ -72,6 +74,23 @@ static void syscall_proc_signal(int pid, int signal);
  * Yield the CPU to the next process
  */
 static void syscall_proc_yield(void);
+
+
+void
+pageFaultHandler(void* address){
+
+    task_t* task = current_task();
+
+    int64_t dif = task->stack_base - address;
+
+    if(0<=dif<STACK_SIZE) {
+        virtual_kalloc(address);
+    } else  {
+        ncPrint("error");
+        // TODO what to do?
+    }
+
+}
 
 /*
  * Function to run on timer tick interruption
