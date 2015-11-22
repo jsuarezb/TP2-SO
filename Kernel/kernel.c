@@ -97,11 +97,6 @@ void * initializeKernelBinary()
 	ncNewline();
 	ncNewline();
 
-    ncPrint("Starting pmem...");
-    init_pmem();
-    ncPrint(" OK");
-    ncNewline();
-
 	return getStackBase();
 }
 
@@ -168,6 +163,11 @@ void shell_task(){
 int main()
 {
 
+    ncPrint("Starting pmem...");
+    init_pmem();
+    ncPrint(" OK");
+    ncNewline();
+
     ncPrint("Starting scheduler");
     sched_init();
     ncPrint(" OK ");
@@ -184,6 +184,7 @@ int main()
 	init_task_pid = init_task->pid;
 
 	init_paging();
+
 	_vClear();
 
 	finalizeSetup();
