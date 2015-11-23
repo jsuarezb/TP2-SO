@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "task.h"
 #include "pmem.h"
+#include "paging.h"
 
 void task_init(task_t* task, void (*func)(int, char **), int argc, char** argv){
 
@@ -31,6 +32,7 @@ void task_init(task_t* task, void (*func)(int, char **), int argc, char** argv){
 	context->cs = 0x008;	// this
 	context->rflags = 0x202; // and this are copied from other place
 	context->rsp = task->stack;
+
 	context->ss = 0x0;
 	context->base = 0x0;
 
@@ -53,7 +55,7 @@ task_wrapper(void (*func)(int, char **), int argc, char ** argv)
     remove_task_with_pid(task->pid);
 
     SetInts(i);
-    
+
     while (1);
 }
 

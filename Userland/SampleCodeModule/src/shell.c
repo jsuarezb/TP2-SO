@@ -41,9 +41,12 @@ static int i = 0;
 
 static void alloc_main(int argc, char ** argv);
 
+
 void start_shell()
 {
 	char c;
+
+    //stack_overflow();
 
 	printLineStart();
 	// Main loop

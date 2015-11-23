@@ -7,6 +7,7 @@
 #include "include/lib.h"
 #include "include/screensaver.h"
 #include "include/task.h"
+#include "include/scheduler.h"
 #include "include/video.h"
 
 extern unsigned int tickCount;
@@ -72,6 +73,35 @@ static void syscall_proc_signal(int pid);
  * Yield the CPU to the next process
  */
 static void syscall_proc_yield(void);
+
+void
+pageFaultHandler(void * address){
+
+    task_t* task = current_task();
+
+    uint64_t top_limit = (uint64_t) task->stack_base;
+    uint64_t bottom_limit = (uint64_t) task->stack_base - STACK_SIZE;
+
+    int is_inside = (uint64_t) address <= top_limit
+        && (uint64_t) address >= bottom_limit;
+
+    ncPrint("Top limit: "); ncPrintHex(top_limit); ncNewline();
+    ncPrint("Bottom limit: "); ncPrintHex(bottom_limit); ncNewline();
+    ncPrint("Address accessed: "); ncPrintHex(address); ncNewline();
+    ncPrint("RSP: "); ncPrintHex(task->stack); ncNewline();
+
+    if (is_inside) {
+        void * a = virtual_kalloc(address);
+        ncPrintHex(a);
+
+    } else  {
+        // TODO what to do?
+        ncPrint("error");
+
+        _cli();
+        hlt();
+    }
+}
 
 /*
  * Function to run on timer tick interruption
