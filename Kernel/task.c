@@ -62,8 +62,6 @@ task_wrapper(void (*func)(int, char **), int argc, char ** argv)
 
     SetInts(i);
     _reschedule();
-
-    while (1);
 }
 
 task_t*

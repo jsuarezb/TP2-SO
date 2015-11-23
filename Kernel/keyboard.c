@@ -3,6 +3,7 @@
 #include "include/scheduler.h"
 #include "include/keyboard.h"
 #include "include/video.h"
+#include "include/lib.h"
 
 extern struct KBD keyboard;
 

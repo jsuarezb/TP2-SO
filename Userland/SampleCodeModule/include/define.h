@@ -52,6 +52,7 @@
 #define IPCS_COMMAND    "ipcs"
 #define KILL_COMMAND    "kill"
 #define FG_COMMAND      "fg"
+#define COUNTER_PROCESS "counter"
 
 #define NULL ((void*) 0)
 

@@ -51,6 +51,8 @@ void main_kill(int argc, char** argv);
 
 void parse_sh(const char * command, int fg);
 
+void main_counter(int argc, char ** argv);
+
 void start_shell()
 {
 	char c;
@@ -307,6 +309,8 @@ parse_sh(const char * command, int fg)
         func = main_test_2_ipc;
     } else if (strcmp(process_name, SEM_3) == 0) {
         func = main_test_3_ipc;
+    } else if (strcmp(process_name, COUNTER_PROCESS) == 0) {
+        func = main_counter;
     } else {
         printf("No existe el proceso\n");
         return;
@@ -335,9 +339,9 @@ main_test_1_ipc(int argc, char ** argv)
     }
     char * shm = shm_open(key);
 
-    printf("Semáforo %d bloqueado\n",key);
+    printf("Semaforo %d bloqueado\n",key);
     sem_down(sem);
-    printf("Semáforo %d desbloqueado, mensaje leido de shm %d: %s\n", key,key,shm);
+    printf("Semaforo %d desbloqueado, mensaje leido de shm %d: %s\n", key,key,shm);
 }
 
 void
@@ -359,13 +363,12 @@ main_test_3_ipc(int argc, char ** argv)
 {
 	uint64_t key = stoi(argv[0]);
 
-
     void * sem = sem_get(key);
     char * shm = shm_get(key);
 
-    printf("Semáforo %d bloqueado\n",key);
+    printf("Semaforo %d bloqueado\n",key);
     sem_down(sem);
-    printf("Semáforo %d desbloqueado, mensaje leido de shm %d: %s\n", key,key,shm);
+    printf("Semaforo %d desbloqueado, mensaje leido de shm %d: %s\n", key,key,shm);
 }
 
 void
@@ -407,4 +410,15 @@ main_ipcs(int argc, char ** argv)
     for (i = 0; i < list->nshm; i++) {
         printf("key: %d add: %x\n", list->addresses[i]->key, list->addresses[i]->start);
     }
+}
+
+void
+main_counter(int argc, char ** argv)
+{
+    uint64_t i = 0;
+
+    while (i++ < 0xFFFFFFFFFFFFFFFF)
+        if (i % 1000000 == 0)
+            printf("contando %d\n", i);
+
 }

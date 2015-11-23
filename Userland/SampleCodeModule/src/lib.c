@@ -18,11 +18,10 @@ void putChar(char c)
 
 char getChar()
 {
-	char c = -1;
-	while(c == -1)
-		_sys_call(SYS_READ, STDIN, (uint64_t) &c, 1);
+    char c;
+    _sys_call(SYS_READ, STDIN, (uint64_t) &c, 1);
 
-	return c;
+	return c; 
 }
 
 void putString(char * str)
