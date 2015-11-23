@@ -7,7 +7,11 @@ uint32_t currentId = 0;
 static sem_t *sem_array[MAX_SEM];
 
 sem_t *
-create_sem(uint32_t id, uint32_t value){
+create_sem(uint32_t id, uint32_t value)
+{
+    sem_t * sem_aux = sem_get(id);
+    if (sem_aux != NULL)
+        return NULL;
 
 	sem_t *sem = pmem_alloc();
 
@@ -35,8 +39,8 @@ sem_up(sem_t *sem){
 		sem->value++;
     } else {
     	resume_task_with_pid(sem->pids[0]);
-    	for(int i=0; i<(sem->currentTask);i++)
-    		sem->pids[i]=sem->pids[i+1];
+    	for(int i = 0; i < sem->currentTask; i++)
+    		sem->pids[i] = sem->pids[i+1];
 
     	sem->currentTask--;
     }

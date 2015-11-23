@@ -18,6 +18,10 @@ init_shm()
 void *
 shm_open(int key)
 {
+    void * shm_aux = shm_get(key);
+    if (shm_aux != 0)
+        return shm_aux;
+
     int i = get_free_index();
 
     if (i == -1)
@@ -52,6 +56,7 @@ shm_close(int key)
             if (shm_pool[i]->key == key) {
                 kfree(shm_pool[i]->start);
                 kfree(shm_pool[i]);
+                shm_pool[i] = 0;
 
                 return 1;
             }
@@ -59,6 +64,12 @@ shm_close(int key)
     }
 
     return 0;
+}
+
+SharedMemory **
+get_shm_pool(void)
+{
+    return shm_pool;
 }
 
 static int

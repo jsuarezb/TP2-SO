@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "task.h"
 
-#define NULL (void*)0
+#define NULL ((void*) 0)
 #define MAX_SEM 256
 
 typedef struct{

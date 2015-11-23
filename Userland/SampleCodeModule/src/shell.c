@@ -45,6 +45,12 @@ void main_test_1_ipc(int argc, char ** argv);
 
 void main_test_2_ipc(int argc, char ** argv);
 
+void main_test_3_ipc(int argc, char ** argv);
+
+void main_ps(int argc, char ** argv);
+
+void main_ipcs(int argc, char ** argv);
+
 void start_shell()
 {
 	char c;
@@ -118,12 +124,10 @@ void parseCommand(const char * line)
         parse_sh(line, 0);
     } else if (strcmp(command, SHF_COMMAND) == 0) {
         parse_sh(line, 1);
-    } else if (strcmp(command, ALLOC_COMMAND) == 0) {
-        init_proc(alloc_main);
-    } else if (strcmp(command, SEM_1) == 0) {
-        init_proc(main_test_1_ipc);
-    } else if (strcmp(command, SEM_2) == 0) {
-        init_proc(main_test_2_ipc);
+    } else if (strcmp(command, PS_COMMAND) == 0) {
+        int i = init_proc(main_ps, 0, 0);
+    } else if (strcmp(command, IPCS_COMMAND) == 0) {
+        init_proc(main_ipcs, 0, 0);
     } else {
 		printf("Command not found.\n");
 	}
@@ -267,14 +271,14 @@ parse_sh(char * command, int fg)
 
     void (*func)(int, char **);
 
-    printf("p: %s", command);
-
     if (strcmp(process_name, ALLOC_COMMAND) == 0) {
         func = alloc_main;
     } else if (strcmp(process_name, SEM_1) == 0) {
         func = main_test_1_ipc;
     } else if (strcmp(process_name, SEM_2) == 0) {
         func = main_test_2_ipc;
+    } else if (strcmp(process_name, SEM_3) == 0) {
+        func = main_test_3_ipc;
     } else {
         printf("No existe el proceso\n");
         return;
@@ -320,14 +324,17 @@ void
 main_test_1_ipc(int argc, char ** argv)
 {
     int i = 0;
-    
+
     void * sem = create_sem(1, 0);
+    if (sem == NULL) {
+        printf("No se pudo crear el semaforo\n");
+        return;
+    }
     char * shm = shm_open(1);
 
     printf("Bloqueado\n");
     sem_down(sem);
     printf("Desbloqueado\n");
-    sem_up(sem);
 }
 
 void
@@ -343,4 +350,59 @@ main_test_2_ipc(int argc, char ** argv)
     shm[4] = 0;
 
     sem_up(sem);
+}
+
+
+void
+main_test_3_ipc(int argc, char ** argv)
+{
+    int i = 0;
+
+    void * sem = sem_get(1);
+    char * shm = shm_get(1);
+
+    printf("Bloqueado\n");
+    sem_down(sem);
+    printf("Desbloqueado\n");
+}
+
+void
+main_ps(int argc, char ** argv)
+{
+    ps_list * list = _sys_call(SYS_PS, 0, 0, 0);
+
+    printf("\nPID  PPID  FG  STATUS\n");
+
+    int i;
+    char * fg_str;
+    char * status_str;
+    for (i = 0; i < list->nprocess; i++) {
+        fg_str = (list->list[i].foreground == 0 ? "-" : "+");
+        switch (list->list[i].status) {
+            case 0:
+                status_str = "P";
+                break;
+
+            case 1:
+                status_str = "S";
+                break;
+
+            case 2:
+                status_str = "R";
+                break;
+        }
+
+        printf(" %d     %d    %s     %s\n", list->list[i].pid, list->list[i].parent_pid, fg_str, status_str);
+    }
+}
+
+void
+main_ipcs(int argc, char ** argv)
+{
+    shm_list * list = (shm_list *) _sys_call(SYS_IPCS, 0, 0, 0);
+
+    int i;
+    for (i = 0; i < list->nshm; i++) {
+        printf("key: %d add: %x\n", list->addresses[i]->key, list->addresses[i]->start);
+    }
 }

@@ -17,4 +17,6 @@ void * shm_get(int key);
 
 int shm_close(int key);
 
+SharedMemory ** get_shm_pool(void);
+
 #endif

@@ -2,6 +2,7 @@
 #define _DEFINES_H_
 
 #include <stdint.h>
+#include "shm.h"
 
 #define FALSE	0
 #define TRUE	!FALSE
@@ -171,5 +172,22 @@ typedef struct date {
    	uint8_t minute;
    	uint8_t second;
 } date;
+
+typedef struct ps_entry {
+    int pid;
+    int parent_pid;
+    int foreground;
+    int status;
+} ps_entry;
+
+typedef struct ps_list {
+    int nprocess;
+    ps_entry * list;
+} ps_list;
+
+typedef struct shm_list {
+    int nshm;
+    SharedMemory ** addresses;
+} shm_list;
 
 #endif

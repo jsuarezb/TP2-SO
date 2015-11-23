@@ -7,9 +7,9 @@
 #include "include/paging.h"
 
 static int current_pid = -1;
-task_t* current;
+task_t* current = NULL;
 
-task_t * foreground;
+task_t * foreground = NULL;
 
 stack_ptr stacks[MAX_TASKS];
 task_t tasks[MAX_TASKS];
@@ -238,6 +238,11 @@ create_task(void (*func)(int, char **), int argc, char**argv){
     	task->next = 0;
     	task->pid = pid;
 
+        if (current != NULL)
+            task->parent_pid = current->pid;
+        else
+            task->parent_pid = 0;
+
     	task->stack_base = stacks[pid];
     	task->stack = stacks[pid];
 
@@ -266,6 +271,11 @@ signal_task(int pid)
 void
 give_foreground(int pid)
 {
+    if (pid == -1) {
+        foreground = NULL;
+        return;
+    }
+
     task_t * task = find_task_with_pid(pid);
     if (task == -1)
         return;

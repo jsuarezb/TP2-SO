@@ -53,6 +53,8 @@ task_wrapper(void (*func)(int, char **), int argc, char ** argv)
     int i = SetInts(0);
 
     task_t * task = get_current_task();
+    
+    give_foreground(task->parent_pid);
     remove_task_with_pid(task->pid);
 
     SetInts(i);

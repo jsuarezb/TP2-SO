@@ -38,13 +38,15 @@ typedef struct{
 
 typedef enum {
 	TASK_READY,
-	TASK_PAUSED
+	TASK_PAUSED,
+    TASK_RUNNING
 } task_state_t;
 
 typedef struct task_t task_t;
 
 struct task_t {
 	int pid;
+    int parent_pid;
 
 	stack_ptr stack;
 	stack_ptr stack_base;

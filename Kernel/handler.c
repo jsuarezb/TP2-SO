@@ -257,21 +257,60 @@ syscall_free(void * address)
 static void *
 syscall_process_status(void)
 {
-    void * address = kalloc();
+    ps_list * list = kalloc();
+    list->list = (ps_entry *) kalloc();
+    ps_entry entry;
 
-    // TODO fill the address with details of processes
+    task_t * task = get_current_task();
+    task_t * fg_task = get_foreground_task();
 
-    return address;
+    int first_pid = task->pid, i = 0;
+    do {
+        ps_entry * entry = (ps_entry *) kalloc();
+
+        entry->pid = task->pid;
+        entry->parent_pid = task->parent_pid;
+        entry->foreground = (task->pid == fg_task->pid ? 1 : 0);
+
+        if (task->state == TASK_READY) {
+            if (task->pid == first_pid) {
+                entry->status = TASK_RUNNING;
+            } else {
+                entry->status = TASK_READY;
+            }
+        } else {
+            entry->status = TASK_PAUSED;
+        }
+
+        list->list[i] = *entry;
+        task = task->next;
+        i++;
+    } while (task->pid != first_pid);
+
+    list->nprocess = i;
+
+    return list;
 }
 
 static void *
 syscall_ipcs(void)
 {
-    void * address = kalloc();
+    shm_list * list = kalloc();
+    list->addresses = kalloc();
 
-    // TODO fill the address with details of ipcs
+    SharedMemory ** pool = get_shm_pool();
+    int i, j = 0;
+    for (i = 0; i < MAX_SHM; i++) {
+        if (pool[i] == 0)
+            continue;
 
-    return address;
+        list->addresses[j] = pool[i];
+        j++;
+    }
+
+    list->nshm = j;
+
+    return list;
 }
 
 static int

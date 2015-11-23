@@ -147,12 +147,11 @@ static int init_task_pid = -1;
 
 void initialize_task() {
 	IDTinitialize();
-	while(1);
+    while (1);
 }
 
 void
 shell_task(int argc, char ** argv){
-
 	// Remove the init_task
 	// remove_task_with_pid(init_task_pid);
 
@@ -192,7 +191,7 @@ int main()
 	add_task(init_task);
 	init_task_pid = init_task->pid;
 
-	_vClear();
+    _vClear();
 
 	finalizeSetup();
 

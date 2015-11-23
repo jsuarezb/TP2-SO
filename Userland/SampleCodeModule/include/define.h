@@ -45,8 +45,13 @@
 #define ALLOC_COMMAND       	"alloc"
 #define SEM_1       	"sem1"
 #define SEM_2       	"sem2"
+#define SEM_3       	"sem3"
 #define SH_COMMAND      "sh"
 #define SHF_COMMAND     "shf"
+#define PS_COMMAND      "ps"
+#define IPCS_COMMAND    "ipcs"
+
+#define NULL ((void*) 0)
 
 typedef struct date {
 	uint8_t year;
@@ -56,5 +61,27 @@ typedef struct date {
    	uint8_t minute;
    	uint8_t second;
 } date;
+
+typedef struct ps_entry {
+    int pid;
+    int parent_pid;
+    int foreground;
+    int status;
+} ps_entry;
+
+typedef struct ps_list {
+    int nprocess;
+    ps_entry * list;
+} ps_list;
+
+typedef struct SharedMemory {
+    void * start;
+    int key;
+} SharedMemory;
+
+typedef struct shm_list {
+    int nshm;
+    SharedMemory ** addresses;
+} shm_list;
 
 #endif
