@@ -114,7 +114,11 @@ void parseCommand(const char * line)
 			printf("Invalid argument\n");
 	} else if (strcmp(command, GET_CPU_VENDOR_COMMAND) == 0) {
 		getCpuVendor();
-	} else if (strcmp(command, ALLOC_COMMAND) == 0) {
+	} else if (strcmp(command, SH_COMMAND) == 0) {
+        parse_sh(line, 0);
+    } else if (strcmp(command, SHF_COMMAND) == 0) {
+        parse_sh(line, 1);
+    } else if (strcmp(command, ALLOC_COMMAND) == 0) {
         init_proc(alloc_main);
     } else if (strcmp(command, SEM_1) == 0) {
         init_proc(main_test_1_ipc);
@@ -249,6 +253,44 @@ static void getCpuVendor()
 	printf("%s\n", vendor);
 }
 
+void
+parse_sh(char * command, int fg)
+{
+    char sh[77];
+    char process_name[77];
+    char arg2[77];
+    int i = sscanf(command, "%s %s %s", sh, process_name, arg2);
+
+    char * argv[77];
+    argv[0] = process_name;
+    argv[1] = arg2;
+
+    void (*func)(int, char **);
+
+    printf("p: %s", command);
+
+    if (strcmp(process_name, ALLOC_COMMAND) == 0) {
+        func = alloc_main;
+    } else if (strcmp(process_name, SEM_1) == 0) {
+        func = main_test_1_ipc;
+    } else if (strcmp(process_name, SEM_2) == 0) {
+        func = main_test_2_ipc;
+    } else {
+        printf("No existe el proceso\n");
+        return;
+    }
+
+    int pid = init_proc(func, i - 1, argv);
+    if (pid == -1) {
+        printf("No se pudo crear el proceso\n");
+        return;
+    }
+
+    if (fg)
+        give_foreground(pid);
+
+}
+
 static void stack_overflow(void);
 
 void
@@ -278,15 +320,13 @@ void
 main_test_1_ipc(int argc, char ** argv)
 {
     int i = 0;
-
+    
     void * sem = create_sem(1, 0);
     char * shm = shm_open(1);
 
-    printf("Shm: %x\n", shm);
     printf("Bloqueado\n");
     sem_down(sem);
     printf("Desbloqueado\n");
-    printf("%s\n", shm);
     sem_up(sem);
 }
 
@@ -299,7 +339,7 @@ main_test_2_ipc(int argc, char ** argv)
     shm[0] = 'H';
     shm[1] = 'o';
     shm[2] = 'l';
-    shm[3] = 'H';
+    shm[3] = 'a';
     shm[4] = 0;
 
     sem_up(sem);

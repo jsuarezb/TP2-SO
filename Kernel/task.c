@@ -3,7 +3,7 @@
 #include "pmem.h"
 #include "paging.h"
 
-void task_init(task_t* task, void (*func)(int, char **), int argc, char** argv){
+void task_init(task_t* task, void (*func)(int, char **), int argc, char ** argv){
 
     int i = SetInts(0);
 

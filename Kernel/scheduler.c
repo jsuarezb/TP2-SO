@@ -9,8 +9,12 @@
 static int current_pid = -1;
 task_t* current;
 
+task_t * foreground;
+
 stack_ptr stacks[MAX_TASKS];
 task_t tasks[MAX_TASKS];
+
+int foreground_waiting[MAX_TASKS];
 
 extern stack_ptr kernel_stack;
 
@@ -46,6 +50,12 @@ task_t *
 get_current_task(void)
 {
     return current;
+}
+
+task_t *
+get_foreground_task(void)
+{
+    return foreground;
 }
 
 /**
@@ -251,6 +261,28 @@ signal_task(int pid)
     resume_task_with_pid(pid);
 
     return;
+}
+
+void
+give_foreground(int pid)
+{
+    task_t * task = find_task_with_pid(pid);
+    if (task == -1)
+        return;
+
+    foreground = task;
+}
+
+void
+set_waiting_foreground(int pid, int status)
+{
+    foreground_waiting[pid] = status;
+}
+
+int
+is_waiting_foreground(int pid)
+{
+    return foreground_waiting[pid] == 1;
 }
 
 /*

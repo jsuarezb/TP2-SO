@@ -333,10 +333,10 @@ list_ipcs()
 }
 
 int
-init_proc(void (*func)(int, char **))
+init_proc(void (*func)(int, char **), int argc, char ** argv)
 {
     // TODO change argc and argv
-    return _sys_call(SYS_PROC_INIT, func, 0, 0);
+    return _sys_call(SYS_PROC_INIT, func, argc, argv);
 }
 
 void
@@ -411,4 +411,10 @@ int
 shm_close(int key)
 {
     _sys_call(SYS_SHM_CLOSE, key, 0, 0);
+}
+
+void
+give_foreground(int pid)
+{
+    _sys_call(SYS_GIVE_FOREGROUND, pid, 0, 0);
 }

@@ -8,6 +8,7 @@
 void sched_init();
 
 task_t * get_current_task(void);
+task_t * get_foreground_task(void);
 
 task_t* create_task(void (*func)(int, char **), int argc, char**argv);
 
@@ -19,5 +20,11 @@ void remove_task_with_pid(int pid);
 
 void pause_task_with_pid(int pid);
 void resume_task_with_pid(int pid);
+
+void give_foreground(int pid);
+
+void set_waiting_foreground(int pid, int status);
+
+int is_waiting_foreground(int pid);
 
 #endif

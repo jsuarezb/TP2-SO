@@ -96,6 +96,7 @@
 #define SYS_SHM_OPEN    0x75
 #define SYS_SHM_GET     0x76
 #define SYS_SHM_CLOSE   0x77
+#define SYS_GIVE_FOREGROUND 0x80
 
 #define STDIN	0
 #define STDOUT	1

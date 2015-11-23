@@ -231,6 +231,10 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
         case SYS_SHM_CLOSE:
             return shm_close(arg1);
 
+        case SYS_GIVE_FOREGROUND:
+            give_foreground(arg1);
+            break;
+
 		default:
 			break;
 	}
@@ -274,9 +278,12 @@ static int
 syscall_proc_init(void (*func)(int, char **), int argc, char ** argv)
 {
     task_t * task = create_task(func, argc, argv);
+    if (task == -1)
+        return -1;
+
     add_task(task);
 
-    return 0;
+    return task->pid;
 }
 
 static void

@@ -26,6 +26,7 @@
 #define SYS_SHM_OPEN    0x75
 #define SYS_SHM_GET     0x76
 #define SYS_SHM_CLOSE   0x77
+#define SYS_GIVE_FOREGROUND 0x80
 
 #define COMMAND_LINE_SIZE	77
 #define GET_DATE			0
@@ -44,6 +45,8 @@
 #define ALLOC_COMMAND       	"alloc"
 #define SEM_1       	"sem1"
 #define SEM_2       	"sem2"
+#define SH_COMMAND      "sh"
+#define SHF_COMMAND     "shf"
 
 typedef struct date {
 	uint8_t year;

@@ -184,6 +184,7 @@ int main()
     ncPrint("Creating shell");
     task_t* shell = create_task(shell_task, 0, NULL);
     add_task(shell);
+    give_foreground(shell->pid);
 	ncPrint(" OK ");
 
 	// Task to initialize the IDT

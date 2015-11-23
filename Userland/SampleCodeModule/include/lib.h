@@ -117,4 +117,6 @@ void * shm_get(int key);
 
 int shm_close(int key);
 
+void give_foreground(int pid);
+
 #endif

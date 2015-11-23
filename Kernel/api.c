@@ -3,17 +3,26 @@
 #include "include/date.h"
 #include "include/define.h"
 #include "include/keyboard.h"
+#include "include/scheduler.h"
+#include "include/task.h"
 #include "include/video.h"
 
 /*
  * Reads from `fd`, `count` amount of chars and
  * stores it into `buf`
  */
-signed int read(unsigned int fd, char * buf, int count)
+signed int
+read(unsigned int fd, char * buf, int count)
 {
 	signed int bytes = 0;
 
 	if (fd == STDIN) {
+
+        task_t * current_task  = get_current_task();
+        int pid = current_task->pid;
+        set_waiting_foreground(pid, 1);
+        pause_task_with_pid(pid);
+
 		int i;
 		for (i = 0; i < count && !isBufferEmpty(); i++) {
 			buf[i] = getKey();

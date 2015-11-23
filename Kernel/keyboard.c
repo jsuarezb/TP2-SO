@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "include/define.h"
+#include "include/scheduler.h"
 #include "include/keyboard.h"
 #include "include/video.h"
 
@@ -91,15 +92,23 @@ void setKey(unsigned char code)
 		addKey(key.asciiCode);
 }
 
-void addKey(unsigned char c)
+void
+addKey(unsigned char c)
 {
 	keyboard.buffer[keyboard.writeIndex++] = c;
 
 	if (keyboard.writeIndex == KBD_BUFFER_SIZE)
 		keyboard.writeIndex = 0;
+
+    task_t * foreground = get_foreground_task();
+    if (is_waiting_foreground(foreground->pid) != 0) {
+        set_waiting_foreground(foreground->pid, 0);
+        resume_task_with_pid(foreground->pid);
+    }
 }
 
-unsigned char getKey()
+unsigned char
+getKey()
 {
 	unsigned char c = keyboard.buffer[keyboard.readIndex];
 	keyboard.buffer[keyboard.readIndex++] = 0;
