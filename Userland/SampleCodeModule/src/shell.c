@@ -151,37 +151,47 @@ static void help()
 	int opt = 0;
 	printf("Hi, I'm help, available commands:\n");
 	printf("Please select your option\n");
-	printf("0 - GET TIME\n");
-	printf("1 - SET TIME\n");
-	printf("2 - SET SCREENSAVER TIME\n");
-	printf("3 - GET CPU VENDOR\n");
+	printf("0 - sh\n");
+	printf("1 - sem1\n");
+	printf("2 - sem2\n");
+    printf("3 - sem3\n");
+    printf("4 - ps\n");
+	printf("5 - ipcs\n");
+    printf("6 - help\n");
 
-	if (scanf("%d", &opt) == 0 || opt > 3) {
+	if (scanf("%d", &opt) == 0 || opt > 6) {
 		printf("Invalid option\n");
 		return;
 	}
 
 	switch(opt){
-		case GET_DATE:
-			printf("GET DATE:\n");
-			printf("Command: time\n");
-			printf("Display the current date and time in the following format: YYYY/MM/DD HH:MM:SS\n");
+		case 0:
+			printf("sh [command]:\n");
+			printf("executes a process\n");
 			break;
-		case SET_DATE:
-			printf("SET DATE:\n");
-			printf("Command: stime\n");
-			printf("Set the system current date and time\n");
+		case 1:
+			printf("sem1:\n");
+			printf("create a semaphore with key 1 and reads from a shared memory\n");
 			break;
-		case SET_SCREENSAVER:
-			printf("SET SCREENSAVER TIME:\n");
-			printf("Command: ss n\n");
-			printf("** n is the timeout period in seconds **\n");
-			printf("Set the scrensaver timeout period\n");
+		case 2:
+			printf("sem2:\n");
+			printf("ups a semaphore with key 1 and writes in a shared memory\n");
 			break;
-		case GET_CPU_VENDOR:
-			printf("GET CPU VENDOR:\n");
-			printf("Command: cpuid\n");
-			printf("Display the CPU's manufacturer ID string\n");
+		case 3:
+			printf("sem3:\n");
+			printf("reads from a shared memory\n");
+			break;
+		case 4:
+			printf("ps:\n");
+			printf("show active processes\n");
+			break;
+		case 5:
+			printf("ipcs:\n");
+			printf("show active ipcs (shared memories created)\n");
+			break;
+		case 6:
+			printf("help:\n");
+			printf("show help\n");
 			break;
 		default:
 			printf("Invalid command.\n");
@@ -312,11 +322,7 @@ main_test_2_ipc(int argc, char ** argv)
     void * sem = sem_get(1);
     char * shm = shm_get(1);
 
-    shm[0] = 'H';
-    shm[1] = 'o';
-    shm[2] = 'l';
-    shm[3] = 'a';
-    shm[4] = 0;
+    scanf("%s\n", shm);
 
     sem_up(sem);
 }
