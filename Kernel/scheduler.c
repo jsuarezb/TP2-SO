@@ -96,7 +96,7 @@ find_task_with_pid(int pid) {
 		t = t->next;
 
 		if(t->pid == inital_pid){
-			t = -1;
+			t = (task_t *) -1;
 			break;
 		}
 	}
@@ -129,7 +129,7 @@ pause_task_with_pid(int pid){
 
 	task_t* task = find_task_with_pid(pid);
 
-	if(task != -1)
+	if(task != (task_t *) -1)
 		task_pause(task);
 
     SetInts(i);
@@ -151,7 +151,7 @@ resume_task_with_pid(int pid){
 
 	task_t* task = find_task_with_pid(pid);
 
-	if(task != -1)
+	if(task != (task_t *) -1)
 		task_ready(task);
 
     SetInts(i);
@@ -196,7 +196,7 @@ remove_task_with_pid(int pid)
 
 	task_t* tr = find_task_with_pid(pid);
 
-	if (tr != -1) {
+	if (tr != (task_t *) -1) {
     	task_t* pr = tr->next;
 
     	while(pr->next->pid != pid)
@@ -253,21 +253,7 @@ create_task(void (*func)(int, char **), int argc, char**argv){
 
     SetInts(i);
 
-	return pid == -1 ? -1 : task;
-}
-
-/**
- * Sends a signal to a process
- *
- * @param pid   pid of the process
- */
-void
-signal_task(int pid)
-{
-    task_t * task = find_task_with_pid(pid);
-    resume_task_with_pid(pid);
-
-    return;
+	return pid == -1 ? (task_t *) -1 : task;
 }
 
 void
@@ -279,7 +265,7 @@ give_foreground(int pid)
     }
 
     task_t * task = find_task_with_pid(pid);
-    if (task == -1)
+    if (task == (task_t *) -1)
         return;
 
     foreground = task;
