@@ -10,6 +10,7 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 void _cli(void);
 void _sti(void);
 void hlt(void);
+uint64_t _asm_get_eflags(void);
 
 void _reschedule(void);
 

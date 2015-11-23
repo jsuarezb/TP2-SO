@@ -35,10 +35,6 @@ static void setScreensaver(int seconds);
 
 static void getCpuVendor();
 
-static void loop();
-
-static int i = 0;
-
 void alloc_main(int argc, char ** argv);
 
 void main_test_1_ipc(int argc, char ** argv);
@@ -50,6 +46,8 @@ void main_test_3_ipc(int argc, char ** argv);
 void main_ps(int argc, char ** argv);
 
 void main_ipcs(int argc, char ** argv);
+
+void parse_sh(const char * command, int fg);
 
 void start_shell()
 {
@@ -125,7 +123,7 @@ void parseCommand(const char * line)
     } else if (strcmp(command, SHF_COMMAND) == 0) {
         parse_sh(line, 1);
     } else if (strcmp(command, PS_COMMAND) == 0) {
-        int i = init_proc(main_ps, 0, 0);
+        init_proc(main_ps, 0, 0);
     } else if (strcmp(command, IPCS_COMMAND) == 0) {
         init_proc(main_ipcs, 0, 0);
     } else {
@@ -258,7 +256,7 @@ static void getCpuVendor()
 }
 
 void
-parse_sh(char * command, int fg)
+parse_sh(const char * command, int fg)
 {
     char sh[77];
     char process_name[77];
@@ -271,9 +269,7 @@ parse_sh(char * command, int fg)
 
     void (*func)(int, char **);
 
-    if (strcmp(process_name, ALLOC_COMMAND) == 0) {
-        func = alloc_main;
-    } else if (strcmp(process_name, SEM_1) == 0) {
+    if (strcmp(process_name, SEM_1) == 0) {
         func = main_test_1_ipc;
     } else if (strcmp(process_name, SEM_2) == 0) {
         func = main_test_2_ipc;
@@ -295,36 +291,9 @@ parse_sh(char * command, int fg)
 
 }
 
-static void stack_overflow(void);
-
-void
-stack_overflow(void)
-{
-    int i[787] = {0};
-    int j = 0;
-
-    printf("%x\n", &j);
-}
-
-void
-alloc_main(int argc, char ** argv)
-{
-    int i = 0;
-
-    printf("Start\n");
-
-    while (i++ < 10000000);
-
-    printf("End\n");
-
-    stack_overflow();
-}
-
 void
 main_test_1_ipc(int argc, char ** argv)
 {
-    int i = 0;
-
     void * sem = create_sem(1, 0);
     if (sem == NULL) {
         printf("No se pudo crear el semaforo\n");
@@ -334,7 +303,7 @@ main_test_1_ipc(int argc, char ** argv)
 
     printf("Bloqueado\n");
     sem_down(sem);
-    printf("Desbloqueado\n");
+    printf("Desbloqueado, mensaje leido: %s\n", shm);
 }
 
 void
@@ -356,20 +325,18 @@ main_test_2_ipc(int argc, char ** argv)
 void
 main_test_3_ipc(int argc, char ** argv)
 {
-    int i = 0;
-
     void * sem = sem_get(1);
     char * shm = shm_get(1);
 
     printf("Bloqueado\n");
     sem_down(sem);
-    printf("Desbloqueado\n");
+    printf("Desbloqueado, mensaje leido: %s\n", shm);
 }
 
 void
 main_ps(int argc, char ** argv)
 {
-    ps_list * list = _sys_call(SYS_PS, 0, 0, 0);
+    ps_list * list = (ps_list *) _sys_call(SYS_PS, 0, 0, 0);
 
     printf("\nPID  PPID  FG  STATUS\n");
 

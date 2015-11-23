@@ -13,8 +13,8 @@ static PDE * get_pd_table(int pml4_index, int pdp_index);
 
 static PTE * get_pt_table(int pml4_index, int pdp_index, int pd_index);
 
-static PML4E * pml4_table  = 0x800000;
-static PDPE * pdpe_table1   = 0x801000;
+static PML4E * pml4_table  = (PML4E *) 0x800000;
+static PDPE * pdpe_table1   = (PDPE *) 0x801000;
 
 void
 init_paging(void)
@@ -137,8 +137,6 @@ clear_page_entries(uint64_t * address)
 void *
 get_physical_address(void * address)
 {
-    uint64_t paddress = 0;
-
     int pml4_index = ((uint64_t) address >> 39) & 0x1FF;
     int pdp_index = ((uint64_t) address >> 30) & 0x1FF;
     int pd_index = ((uint64_t) address >> 21) & 0x1FF;

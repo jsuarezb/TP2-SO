@@ -7,6 +7,8 @@
 #define FALSE	0
 #define TRUE	!FALSE
 
+// #define NULL ((void*) 0)
+
 // Date
 #define SECOND 			0x00
 #define MINUTE 			0x02

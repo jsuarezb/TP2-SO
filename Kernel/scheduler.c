@@ -1,10 +1,12 @@
 #include <stdint.h>
+#include <naiveConsole.h>
+#include <stddef.h>
 #include "include/scheduler.h"
 #include "include/lib.h"
-#include <naiveConsole.h>
-#include "video.h"
+#include "include/video.h"
 #include "include/task.h"
 #include "include/paging.h"
+#include "include/define.h"
 
 static int current_pid = -1;
 task_t* current = NULL;

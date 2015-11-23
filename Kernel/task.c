@@ -1,7 +1,10 @@
 #include <stdint.h>
-#include "task.h"
-#include "pmem.h"
-#include "paging.h"
+#include "include/task.h"
+#include "include/kalloc.h"
+#include "include/pmem.h"
+#include "include/paging.h"
+#include "include/lib.h"
+#include "include/scheduler.h"
 
 void task_init(task_t* task, void (*func)(int, char **), int argc, char ** argv){
 
@@ -22,18 +25,18 @@ void task_init(task_t* task, void (*func)(int, char **), int argc, char ** argv)
 	context->r10 = 0x08;
 	context->r9 = 0x09;
 	context->r8 = 0xA;
-	context->rsi = argc;
-	context->rdi = func;
+	context->rsi = (uint64_t) argc;
+	context->rdi = (uint64_t) func;
 	context->rbp = 0xD;
-	context->rdx = argv;
+	context->rdx = (uint64_t) argv;
 	context->rcx = 0xF;
 	context->rbx = 0x10;
 	context->rax = 0x11;
 
-	context->rip = task_wrapper;	// we set the rip to the point where the process is
+	context->rip = (uint64_t) task_wrapper;	// we set the rip to the point where the process is
 	context->cs = 0x008;	// this
 	context->rflags = 0x202; // and this are copied from other place
-	context->rsp = task->stack;
+	context->rsp = (uint64_t) task->stack;
 
 	context->ss = 0x0;
 	context->base = 0x0;
@@ -53,7 +56,7 @@ task_wrapper(void (*func)(int, char **), int argc, char ** argv)
     int i = SetInts(0);
 
     task_t * task = get_current_task();
-    
+
     give_foreground(task->parent_pid);
     remove_task_with_pid(task->pid);
 
@@ -63,10 +66,16 @@ task_wrapper(void (*func)(int, char **), int argc, char ** argv)
     while (1);
 }
 
-task_t* task_ready(task_t* task){
+task_t*
+task_ready(task_t* task){
 	task->state = TASK_READY;
+
+    return task;
 }
 
-task_t* task_pause(task_t* task){
+task_t*
+task_pause(task_t* task){
 	task->state = TASK_PAUSED;
+
+    return task;
 }

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "include/naiveConsole.h"
 #include "include/api.h"
 #include "include/define.h"
 #include "include/handler.h"
@@ -10,6 +11,7 @@
 #include "include/scheduler.h"
 #include "include/shm.h"
 #include "include/video.h"
+#include "include/sem.h"
 
 extern unsigned int tickCount;
 extern unsigned int showingScreensaver;
@@ -63,18 +65,6 @@ static void syscall_proc_kill(int pid);
  */
 static void syscall_proc_sleep(void);
 
-/**
- * Sends a signal to a process and wake it up if it's sleeping
- *
- * @param pid       pid of the process to signal
- */
-static void syscall_proc_signal(int pid);
-
-/**
- * Yield the CPU to the next process
- */
-static void syscall_proc_yield(void);
-
 void
 pageFaultHandler(void * address)
 {
@@ -98,7 +88,7 @@ pageFaultHandler(void * address)
         virtual_kalloc(address);
         SetInts(is_enabled);
     } else {
-        ncPrintHex(address);
+        ncPrintHex((uint64_t) address);
         remove_task_with_pid(task->pid);
         SetInts(is_enabled);
 
@@ -145,8 +135,6 @@ void keyboardHandler(unsigned char c)
 uint64_t
 syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
 {
-    void * a;
-
 	switch (code) {
 		case SYS_READ:
 			read((unsigned int) arg1, (char *) arg2, (int) arg3);
@@ -173,22 +161,14 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
             break;
 
         case SYS_PROC_INIT:
-            return syscall_proc_init((void *) arg1, arg2, arg3);
+            return syscall_proc_init((void *) arg1, (int) arg2, (char **) arg3);
 
         case SYS_PROC_KILL:
-            syscall_proc_kill(arg1);
+            syscall_proc_kill((int) arg1);
             break;
 
         case SYS_PROC_SLEP:
             syscall_proc_sleep();
-            break;
-
-        case SYS_PROC_SIGN:
-            syscall_proc_signal(arg1);
-            break;
-
-        case SYS_PROC_YIELD:
-            syscall_proc_yield();
             break;
 
         case SYS_ALLOC:
@@ -199,34 +179,34 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
             break;
 
         case SYS_PS:
-            return syscall_process_status();
+            return (uint64_t) syscall_process_status();
 
         case SYS_IPCS:
-            return syscall_ipcs();
+            return (uint64_t) syscall_ipcs();
 
         case SYS_SEM_CREAT:
-            return create_sem(arg1, arg2);
+            return (uint64_t) create_sem((uint32_t) arg1, (uint32_t) arg2);
 
         case SYS_SEM_DELETE:
-            delete_sem(arg1);
+            delete_sem((void *) arg1);
             break;
 
         case SYS_SEM_UP:
-            sem_up(arg1);
+            sem_up((void *) arg1);
             break;
 
         case SYS_SEM_DOWN:
-            sem_down(arg1);
+            sem_down((void *) arg1);
             break;
 
         case SYS_SEM_GET:
-            return sem_get(arg1);
+            return (uint64_t) sem_get(arg1);
 
         case SYS_SHM_OPEN:
-            return shm_open(arg1);
+            return (uint64_t) shm_open(arg1);
 
         case SYS_SHM_GET:
-            return shm_get(arg1);
+            return (uint64_t) shm_get(arg1);
 
         case SYS_SHM_CLOSE:
             return shm_close(arg1);
@@ -245,7 +225,7 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
 static uint64_t
 syscall_kalloc(void)
 {
-    return kalloc();
+    return (uint64_t) kalloc();
 }
 
 static void
@@ -259,7 +239,6 @@ syscall_process_status(void)
 {
     ps_list * list = kalloc();
     list->list = (ps_entry *) kalloc();
-    ps_entry entry;
 
     task_t * task = get_current_task();
     task_t * fg_task = get_foreground_task();
@@ -317,7 +296,7 @@ static int
 syscall_proc_init(void (*func)(int, char **), int argc, char ** argv)
 {
     task_t * task = create_task(func, argc, argv);
-    if (task == -1)
+    if ((uint64_t) task == -1)
         return -1;
 
     add_task(task);
@@ -329,6 +308,7 @@ static void
 syscall_proc_kill(int pid)
 {
     remove_task_with_pid(pid);
+    _reschedule();
 }
 
 static void
@@ -338,16 +318,4 @@ syscall_proc_sleep(void)
     int pid = task->pid;
 
     pause_task_with_pid(pid);
-}
-
-static void
-syscall_proc_signal(int pid)
-{
-    signal_task(pid);
-}
-
-static void
-syscall_proc_yield(void)
-{
-    // TODO
 }

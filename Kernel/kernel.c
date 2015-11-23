@@ -4,6 +4,8 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 
+#include <stddef.h>
+
 #include "include/define.h"
 #include "include/video.h"
 #include "include/paging.h"
@@ -42,7 +44,7 @@ void * getStackBase()
 	/*kernel_stack = pmem_alloc();
 	kernel_stack += 0x1000;	// go to the bottom of the stack*/
 
-	kernel_stack = (uint64_t)&endOfKernel + PageSize * 8 - sizeof(uint64_t);//The size of the stack itself, 32KiB
+	kernel_stack = (stack_ptr) ((uint64_t) &endOfKernel + PageSize * 8 - sizeof(uint64_t));//The size of the stack itself, 32KiB
 
 	/*return (void*)(
 		(uint64_t)&endOfKernel

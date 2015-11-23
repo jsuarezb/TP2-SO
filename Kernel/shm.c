@@ -3,7 +3,7 @@
 #include "include/kalloc.h"
 #include "include/shm.h"
 
-static SharedMemory ** shm_pool = 0xA00000;
+static SharedMemory ** shm_pool = (SharedMemory **) 0xA00000;
 
 static int get_free_index(void);
 

@@ -1,3 +1,5 @@
+
+#include <stddef.h>
 #include "include/pmem.h"
 #include "include/sem.h"
 #include "include/scheduler.h"
@@ -29,7 +31,7 @@ create_sem(uint32_t id, uint32_t value)
 }
 
 void
-delete_sem(sem_t *sem){
+delete_sem(sem_t * sem){
 	pmem_free(sem);
 }
 

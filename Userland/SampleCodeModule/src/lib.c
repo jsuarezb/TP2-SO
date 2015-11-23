@@ -311,38 +311,37 @@ int isDigit ( int n )
 void *
 malloc(void)
 {
-    return _sys_call(SYS_ALLOC, 0, 0, 0);
+    return (void *) _sys_call(SYS_ALLOC, 0, 0, 0);
 }
 
 void
 free(void * address)
 {
-    _sys_call(SYS_FREE, address, 0, 0);
+    _sys_call(SYS_FREE, (uint64_t) address, 0, 0);
 }
 
 void *
 process_status(void)
 {
-    return _sys_call(SYS_PS, 0, 0, 0);
+    return (void *) _sys_call(SYS_PS, 0, 0, 0);
 }
 
 void *
 list_ipcs()
 {
-    return _sys_call(SYS_IPCS, 0, 0, 0);
+    return (void *) _sys_call(SYS_IPCS, 0, 0, 0);
 }
 
 int
 init_proc(void (*func)(int, char **), int argc, char ** argv)
 {
-    // TODO change argc and argv
-    return _sys_call(SYS_PROC_INIT, func, argc, argv);
+    return (int) _sys_call(SYS_PROC_INIT, (uint64_t) func, (uint64_t) argc, (uint64_t) argv);
 }
 
 void
 kill_proc(int pid)
 {
-    _sys_call(SYS_PROC_KILL, pid, 0, 0);
+    _sys_call(SYS_PROC_KILL, (uint64_t) pid, 0, 0);
 }
 
 void
@@ -354,7 +353,7 @@ sleep_proc()
 void
 signal_proc(int pid)
 {
-    _sys_call(SYS_PROC_SIGN, pid, 0, 0);
+    _sys_call(SYS_PROC_SIGN, (uint64_t) pid, 0, 0);
 }
 
 void
@@ -368,53 +367,53 @@ yield_proc()
 void *
 create_sem(uint32_t id, uint32_t value)
 {
-    _sys_call(SYS_SEM_CREAT, id, value, 0);
+    return (void *) _sys_call(SYS_SEM_CREAT, (uint64_t) id, (uint64_t) value, 0);
 }
 
 void
 delete_sem(void * sem)
 {
-    _sys_call(SYS_SEM_DELETE, sem, 0, 0);
+    _sys_call(SYS_SEM_DELETE, (uint64_t) sem, 0, 0);
 }
 
 void
 sem_up(void * sem)
 {
-    _sys_call(SYS_SEM_UP, sem, 0, 0);
+    _sys_call(SYS_SEM_UP, (uint64_t) sem, 0, 0);
 }
 
 int
 sem_down(void * sem)
 {
-    return _sys_call(SYS_SEM_DOWN, sem, 0, 0);
+    return (int) _sys_call(SYS_SEM_DOWN, (uint64_t) sem, 0, 0);
 }
 
 void *
 sem_get(uint32_t id)
 {
-    _sys_call(SYS_SEM_GET, id, 0, 0);
+    return (void *) _sys_call(SYS_SEM_GET, (uint64_t) id, 0, 0);
 }
 
 void *
 shm_open(int key)
 {
-    return _sys_call(SYS_SHM_OPEN, key, 0, 0);
+    return (void *) _sys_call(SYS_SHM_OPEN, (uint64_t) key, 0, 0);
 }
 
 void *
 shm_get(int key)
 {
-    return _sys_call(SYS_SHM_GET, key, 0, 0);
+    return (void *) _sys_call(SYS_SHM_GET, (uint64_t) key, 0, 0);
 }
 
 int
 shm_close(int key)
 {
-    _sys_call(SYS_SHM_CLOSE, key, 0, 0);
+    return (int) _sys_call(SYS_SHM_CLOSE, (uint64_t) key, 0, 0);
 }
 
 void
 give_foreground(int pid)
 {
-    _sys_call(SYS_GIVE_FOREGROUND, pid, 0, 0);
+    _sys_call(SYS_GIVE_FOREGROUND, (uint64_t) pid, 0, 0);
 }

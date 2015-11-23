@@ -1,8 +1,9 @@
 
+#include <naiveConsole.h>
 #include "include/kalloc.h"
 #include "include/pmem.h"
 #include "include/paging.h"
-#include <naiveConsole.h>
+#include "include/lib.h"
 
 // We start to give memory at the second half of the virtual address map
 static void * available_virtual_address = HEAP_VIRTUAL_START;

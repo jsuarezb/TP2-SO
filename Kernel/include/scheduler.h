@@ -3,8 +3,6 @@
 
 #include "task.h"
 
-#define NULL (void*)0
-
 void sched_init();
 
 task_t * get_current_task(void);

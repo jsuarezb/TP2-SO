@@ -1,5 +1,7 @@
 #include <stdint.h>
 
+#include "include/lib.h"
+
 void * memset(void * destination, int32_t c, uint64_t length)
 {
 	uint8_t chr = (uint8_t)c;
@@ -55,7 +57,7 @@ int
 SetInts(int enabled)
 {
 	uint64_t flags = _asm_get_eflags();
-    
+
 	if ( enabled )
 		_sti();
 	else
