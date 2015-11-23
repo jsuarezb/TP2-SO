@@ -384,13 +384,31 @@ sem_up(void * sem)
 }
 
 int
-sem_down(void * sem, int pid)
+sem_down(void * sem)
 {
-    _sys_call(SYS_SEM_DOWN, sem, pid, 0);
+    return _sys_call(SYS_SEM_DOWN, sem, 0, 0);
 }
 
 void *
 sem_get(uint32_t id)
 {
     _sys_call(SYS_SEM_GET, id, 0, 0);
+}
+
+void *
+shm_open(int key)
+{
+    return _sys_call(SYS_SHM_OPEN, key, 0, 0);
+}
+
+void *
+shm_get(int key)
+{
+    return _sys_call(SYS_SHM_GET, key, 0, 0);
+}
+
+int
+shm_close(int key)
+{
+    _sys_call(SYS_SHM_CLOSE, key, 0, 0);
 }

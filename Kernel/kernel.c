@@ -163,7 +163,7 @@ shell_task(int argc, char ** argv){
 int main()
 {
 	setupIDTentry(PAGE_FAULT, 0x08, &_exc14handler, 0x8E);
-    
+
     ncPrint("Starting pmem...");
     init_pmem();
     ncPrint(" OK");
@@ -178,6 +178,8 @@ int main()
     sched_init();
     ncPrint(" OK ");
     ncNewline();
+
+    init_shm();
 
     ncPrint("Creating shell");
     task_t* shell = create_task(shell_task, 0, NULL);

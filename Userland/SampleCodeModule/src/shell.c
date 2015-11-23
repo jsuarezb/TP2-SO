@@ -45,12 +45,9 @@ void main_test_1_ipc(int argc, char ** argv);
 
 void main_test_2_ipc(int argc, char ** argv);
 
-
 void start_shell()
 {
 	char c;
-
-    //stack_overflow();
 
 	printLineStart();
 	// Main loop
@@ -130,7 +127,8 @@ void parseCommand(const char * line)
 	clearBuffer();
 }
 
-static void clearBuffer(void)
+static void
+clearBuffer(void)
 {
 	int i;
 	for (i = 0; i < 76; i++)
@@ -282,10 +280,13 @@ main_test_1_ipc(int argc, char ** argv)
     int i = 0;
 
     void * sem = create_sem(1, 0);
-    printf("Sem: %x\n", sem);
+    char * shm = shm_open(1);
+
+    printf("Shm: %x\n", shm);
     printf("Bloqueado\n");
     sem_down(sem);
     printf("Desbloqueado\n");
+    printf("%s\n", shm);
     sem_up(sem);
 }
 
@@ -293,5 +294,13 @@ void
 main_test_2_ipc(int argc, char ** argv)
 {
     void * sem = sem_get(1);
+    char * shm = shm_get(1);
+
+    shm[0] = 'H';
+    shm[1] = 'o';
+    shm[2] = 'l';
+    shm[3] = 'H';
+    shm[4] = 0;
+
     sem_up(sem);
 }

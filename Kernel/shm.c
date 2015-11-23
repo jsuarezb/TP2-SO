@@ -1,16 +1,9 @@
 
 
 #include "include/kalloc.h"
-
-#define MAX_SHM 128
-
-typedef struct {
-    void * start;
-    int key;
-} SharedMemory;
+#include "include/shm.h"
 
 static SharedMemory ** shm_pool = 0xA00000;
-static int is_initialized;
 
 static int get_free_index(void);
 
@@ -25,9 +18,6 @@ init_shm()
 void *
 shm_open(int key)
 {
-    if (!is_initialized)
-        init_shm();
-
     int i = get_free_index();
 
     if (i == -1)
@@ -43,9 +33,6 @@ shm_open(int key)
 void *
 shm_get(int key)
 {
-    if (!is_initialized)
-        return 0;
-
     int i;
     for (i = 0; i < MAX_SHM; i++) {
         if (shm_pool[i] != 0 && shm_pool[i]->key == key) {
@@ -59,9 +46,6 @@ shm_get(int key)
 int
 shm_close(int key)
 {
-    if (!is_initialized)
-        return 0;
-        
     int i;
     for (i = 0; i < MAX_SHM; i++) {
         if (shm_pool[i] != 0) {

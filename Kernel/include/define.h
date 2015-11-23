@@ -93,6 +93,9 @@
 #define SYS_SEM_UP      0x72
 #define SYS_SEM_DOWN    0x73
 #define SYS_SEM_GET     0x74
+#define SYS_SHM_OPEN    0x75
+#define SYS_SHM_GET     0x76
+#define SYS_SHM_CLOSE   0x77
 
 #define STDIN	0
 #define STDOUT	1

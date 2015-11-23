@@ -101,4 +101,20 @@ void signal_proc(int pid);
 
 void yield_proc();
 
+void * create_sem(uint32_t id, uint32_t value);
+
+void delete_sem(void * sem);
+
+void sem_up(void * sem);
+
+int sem_down(void * sem);
+
+void * sem_get(uint32_t id);
+
+void * shm_open(int key);
+
+void * shm_get(int key);
+
+int shm_close(int key);
+
 #endif

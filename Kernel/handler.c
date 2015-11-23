@@ -8,6 +8,7 @@
 #include "include/screensaver.h"
 #include "include/task.h"
 #include "include/scheduler.h"
+#include "include/shm.h"
 #include "include/video.h"
 
 extern unsigned int tickCount;
@@ -144,6 +145,8 @@ void keyboardHandler(unsigned char c)
 uint64_t
 syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
 {
+    void * a;
+
 	switch (code) {
 		case SYS_READ:
 			read((unsigned int) arg1, (char *) arg2, (int) arg3);
@@ -218,6 +221,15 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
 
         case SYS_SEM_GET:
             return sem_get(arg1);
+
+        case SYS_SHM_OPEN:
+            return shm_open(arg1);
+
+        case SYS_SHM_GET:
+            return shm_get(arg1);
+
+        case SYS_SHM_CLOSE:
+            return shm_close(arg1);
 
 		default:
 			break;
