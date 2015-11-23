@@ -8,13 +8,13 @@ static sem_t *sem_array[MAX_SEM];
 
 sem_t *
 create_sem(uint32_t id, uint32_t value){
-	
+
 	sem_t *sem = pmem_alloc();
 
 	sem->id = id;
 	sem->value = value;
 	sem->currentTask = 0;
-	
+
 	if(currentId>MAX_SEM){
 		return NULL;
 	}
@@ -24,36 +24,41 @@ create_sem(uint32_t id, uint32_t value){
 	return sem;
 }
 
-void 
+void
 delete_sem(sem_t *sem){
 	pmem_free(sem);
 }
 
-void 
+void
 sem_up(sem_t *sem){
-	if(sem->currentTask == 0){
+	if (sem->currentTask == 0) {
 		sem->value++;
-	}
-	resume_task_with_pid(sem->pids[0]);
-	for(int i=0; i<(sem->currentTask);i++){
-		sem->pids[i]=sem->pids[i+1];
-	}
-	sem->currentTask--;
+    } else {
+    	resume_task_with_pid(sem->pids[0]);
+    	for(int i=0; i<(sem->currentTask);i++)
+    		sem->pids[i]=sem->pids[i+1];
+
+    	sem->currentTask--;
+    }
 }
 
-int 
-sem_down(sem_t *sem, int pid){
+int
+sem_down(sem_t *sem){
 	if(sem->value > 0){
 		sem->value--;
 		return TRUE;
-	} else{
-		pause_task_with_pid(pid);
-		sem->pids[sem->currentTask++] = pid;
 	}
+
+    task_t * task = get_current_task();
+    int pid = task->pid;
+	sem->pids[sem->currentTask++] = pid;
+
+	pause_task_with_pid(pid);
+
 	return FALSE;
 }
 
-uint32_t 
+uint32_t
 sem_value(sem_t *sem){
 	return sem->value;
 }

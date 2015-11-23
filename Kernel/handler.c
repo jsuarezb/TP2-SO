@@ -201,6 +201,24 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
         case SYS_IPCS:
             return syscall_ipcs();
 
+        case SYS_SEM_CREAT:
+            return create_sem(arg1, arg2);
+
+        case SYS_SEM_DELETE:
+            delete_sem(arg1);
+            break;
+
+        case SYS_SEM_UP:
+            sem_up(arg1);
+            break;
+
+        case SYS_SEM_DOWN:
+            sem_down(arg1);
+            break;
+
+        case SYS_SEM_GET:
+            return sem_get(arg1);
+
 		default:
 			break;
 	}

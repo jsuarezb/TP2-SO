@@ -18,6 +18,11 @@
 #define SYS_FREE    0x5B
 #define SYS_PS      0x60
 #define SYS_IPCS    0x61
+#define SYS_SEM_CREAT   0x70
+#define SYS_SEM_DELETE  0x71
+#define SYS_SEM_UP      0x72
+#define SYS_SEM_DOWN    0x73
+#define SYS_SEM_GET     0x74
 
 #define COMMAND_LINE_SIZE	77
 #define GET_DATE			0
@@ -34,6 +39,8 @@
 #define SET_SCREENSAVER_COMMAND	"ss"
 #define GET_CPU_VENDOR_COMMAND	"cpuid"
 #define ALLOC_COMMAND       	"alloc"
+#define SEM_1       	"sem1"
+#define SEM_2       	"sem2"
 
 typedef struct date {
 	uint8_t year;

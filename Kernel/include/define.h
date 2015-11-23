@@ -88,6 +88,11 @@
 #define SYS_FREE    0x5B
 #define SYS_PS      0x60
 #define SYS_IPCS    0x61
+#define SYS_SEM_CREAT   0x70
+#define SYS_SEM_DELETE  0x71
+#define SYS_SEM_UP      0x72
+#define SYS_SEM_DOWN    0x73
+#define SYS_SEM_GET     0x74
 
 #define STDIN	0
 #define STDOUT	1

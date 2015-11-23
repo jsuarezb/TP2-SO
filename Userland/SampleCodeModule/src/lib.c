@@ -362,3 +362,35 @@ yield_proc()
 {
     _sys_call(SYS_PROC_YIELD, 0, 0, 0);
 }
+
+// SEMAPHORES
+
+void *
+create_sem(uint32_t id, uint32_t value)
+{
+    _sys_call(SYS_SEM_CREAT, id, value, 0);
+}
+
+void
+delete_sem(void * sem)
+{
+    _sys_call(SYS_SEM_DELETE, sem, 0, 0);
+}
+
+void
+sem_up(void * sem)
+{
+    _sys_call(SYS_SEM_UP, sem, 0, 0);
+}
+
+int
+sem_down(void * sem, int pid)
+{
+    _sys_call(SYS_SEM_DOWN, sem, pid, 0);
+}
+
+void *
+sem_get(uint32_t id)
+{
+    _sys_call(SYS_SEM_GET, id, 0, 0);
+}

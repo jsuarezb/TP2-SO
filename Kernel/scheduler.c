@@ -121,6 +121,8 @@ pause_task_with_pid(int pid){
 		task_pause(task);
 
     SetInts(i);
+
+    _reschedule();
 }
 
 /**

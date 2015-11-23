@@ -39,7 +39,11 @@ static void loop();
 
 static int i = 0;
 
-static void alloc_main(int argc, char ** argv);
+void alloc_main(int argc, char ** argv);
+
+void main_test_1_ipc(int argc, char ** argv);
+
+void main_test_2_ipc(int argc, char ** argv);
 
 
 void start_shell()
@@ -115,6 +119,10 @@ void parseCommand(const char * line)
 		getCpuVendor();
 	} else if (strcmp(command, ALLOC_COMMAND) == 0) {
         init_proc(alloc_main);
+    } else if (strcmp(command, SEM_1) == 0) {
+        init_proc(main_test_1_ipc);
+    } else if (strcmp(command, SEM_2) == 0) {
+        init_proc(main_test_2_ipc);
     } else {
 		printf("Command not found.\n");
 	}
@@ -248,7 +256,7 @@ static void stack_overflow(void);
 void
 stack_overflow(void)
 {
-    int i[700] = {0};
+    int i[787] = {0};
     int j = 0;
 
     printf("%x\n", &j);
@@ -259,9 +267,6 @@ alloc_main(int argc, char ** argv)
 {
     int i = 0;
 
-    char * j = (char *) 0x2800000FF;
-    j[0] = 'a';
-
     printf("Start\n");
 
     while (i++ < 10000000);
@@ -269,4 +274,24 @@ alloc_main(int argc, char ** argv)
     printf("End\n");
 
     stack_overflow();
+}
+
+void
+main_test_1_ipc(int argc, char ** argv)
+{
+    int i = 0;
+
+    void * sem = create_sem(1, 0);
+    printf("Sem: %x\n", sem);
+    printf("Bloqueado\n");
+    sem_down(sem);
+    printf("Desbloqueado\n");
+    sem_up(sem);
+}
+
+void
+main_test_2_ipc(int argc, char ** argv)
+{
+    void * sem = sem_get(1);
+    sem_up(sem);
 }

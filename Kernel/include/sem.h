@@ -20,7 +20,7 @@ void delete_sem(sem_t *sem);
 
 void sem_up(sem_t *sem);
 
-int sem_down(sem_t *sem, int pid);
+int sem_down(sem_t *sem);
 
 uint32_t sem_value(sem_t *sem);
 
