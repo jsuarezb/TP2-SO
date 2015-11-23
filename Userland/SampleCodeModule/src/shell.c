@@ -47,6 +47,8 @@ void main_ps(int argc, char ** argv);
 
 void main_ipcs(int argc, char ** argv);
 
+void main_kill(int argc, char** argv);
+
 void parse_sh(const char * command, int fg);
 
 void start_shell()
@@ -126,6 +128,10 @@ void parseCommand(const char * line)
         init_proc(main_ps, 0, 0);
     } else if (strcmp(command, IPCS_COMMAND) == 0) {
         init_proc(main_ipcs, 0, 0);
+    } else if (strcmp(command, KILL_COMMAND) == 0) {
+    	kill_proc(stoi(args));
+    } else if (strcmp(command, FG_COMMAND) == 0) {
+    	give_foreground(stoi(args));
     } else {
 		printf("Command not found.\n");
 	}
@@ -152,14 +158,17 @@ static void help()
 	printf("Hi, I'm help, available commands:\n");
 	printf("Please select your option\n");
 	printf("0 - sh\n");
-	printf("1 - sem1\n");
-	printf("2 - sem2\n");
-    printf("3 - sem3\n");
-    printf("4 - ps\n");
-	printf("5 - ipcs\n");
-    printf("6 - help\n");
+	printf("1 - shf\n");
+	printf("2 - sem1\n");
+	printf("3 - sem2\n");
+    printf("4 - sem3\n");
+    printf("5 - ps\n");
+	printf("6 - ipcs\n");
+	printf("7 - kill\n");
+	printf("8 - fg\n");
+    printf("9 - help\n");
 
-	if (scanf("%d", &opt) == 0 || opt > 6) {
+	if (scanf("%d", &opt) == 0 || opt > 9) {
 		printf("Invalid option\n");
 		return;
 	}
@@ -170,26 +179,38 @@ static void help()
 			printf("executes a process\n");
 			break;
 		case 1:
-			printf("sem1:\n");
-			printf("create a semaphore with key 1 and reads from a shared memory\n");
+			printf("shf [command]:\n");
+			printf("executes a process giving foreground\n");
 			break;
 		case 2:
-			printf("sem2:\n");
-			printf("ups a semaphore with key 1 and writes in a shared memory\n");
+			printf("sem1:\n");
+			printf("create a semaphore with a key and reads from a shared memory with same key\n");
 			break;
 		case 3:
-			printf("sem3:\n");
-			printf("reads from a shared memory\n");
+			printf("sem2:\n");
+			printf("ups a semaphore with a key and writes in a shared memory of same key\n");
 			break;
 		case 4:
+			printf("sem3:\n");
+			printf("reads from a shared memory of a certain key\n");
+			break;
+		case 5:
 			printf("ps:\n");
 			printf("show active processes\n");
 			break;
-		case 5:
+		case 6:
 			printf("ipcs:\n");
 			printf("show active ipcs (shared memories created)\n");
 			break;
-		case 6:
+		case 7:
+			printf("kill:\n");
+			printf("kill a process with a given pid\n");
+			break;
+		case 8:
+			printf("fg:\n");
+			printf("give foreground to a process with a certain pid\n");
+			break;
+		case 9:
 			printf("help:\n");
 			printf("show help\n");
 			break;
@@ -268,14 +289,13 @@ static void getCpuVendor()
 void
 parse_sh(const char * command, int fg)
 {
-    char sh[77];
-    char process_name[77];
-    char arg2[77];
+    char sh[77] = {0};
+    char process_name[77] = {0};
+    char arg2[77] = {0};
     int i = sscanf(command, "%s %s %s", sh, process_name, arg2);
 
-    char * argv[77];
-    argv[0] = process_name;
-    argv[1] = arg2;
+    char * argv[77] ={0};
+    strcpy(argv[0], arg2);
 
     void (*func)(int, char **);
 
@@ -290,7 +310,7 @@ parse_sh(const char * command, int fg)
         return;
     }
 
-    int pid = init_proc(func, i - 1, argv);
+    int pid = init_proc(func, i - 2, argv);
     if (pid == -1) {
         printf("No se pudo crear el proceso\n");
         return;
@@ -304,23 +324,27 @@ parse_sh(const char * command, int fg)
 void
 main_test_1_ipc(int argc, char ** argv)
 {
-    void * sem = create_sem(1, 0);
+
+	uint64_t key = stoi(argv[0]);
+    void * sem = create_sem(key, 0);
     if (sem == NULL) {
         printf("No se pudo crear el semaforo\n");
         return;
     }
-    char * shm = shm_open(1);
+    char * shm = shm_open(key);
 
-    printf("Bloqueado\n");
+    printf("Semáforo %d bloqueado\n",key);
     sem_down(sem);
-    printf("Desbloqueado, mensaje leido: %s\n", shm);
+    printf("Semáforo %d desbloqueado, mensaje leido de shm %d: %s\n", key,key,shm);
 }
 
 void
 main_test_2_ipc(int argc, char ** argv)
 {
-    void * sem = sem_get(1);
-    char * shm = shm_get(1);
+	uint64_t key = stoi(argv[0]);
+
+    void * sem = sem_get(key);
+    char * shm = shm_get(key);
 
     scanf("%s\n", shm);
 
@@ -331,12 +355,15 @@ main_test_2_ipc(int argc, char ** argv)
 void
 main_test_3_ipc(int argc, char ** argv)
 {
-    void * sem = sem_get(1);
-    char * shm = shm_get(1);
+	uint64_t key = stoi(argv[0]);
 
-    printf("Bloqueado\n");
+
+    void * sem = sem_get(key);
+    char * shm = shm_get(key);
+
+    printf("Semáforo %d bloqueado\n",key);
     sem_down(sem);
-    printf("Desbloqueado, mensaje leido: %s\n", shm);
+    printf("Semáforo %d desbloqueado, mensaje leido de shm %d: %s\n", key,key,shm);
 }
 
 void

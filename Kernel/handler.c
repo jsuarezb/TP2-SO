@@ -58,7 +58,7 @@ static int syscall_proc_init(void (*func)(int, char **), int argc, char ** argv)
  *
  * @param pid   pid of the process to kill
  */
-static void syscall_proc_kill(int pid);
+static int syscall_proc_kill(int pid);
 
 /**
  * Sleep the current process
@@ -304,11 +304,15 @@ syscall_proc_init(void (*func)(int, char **), int argc, char ** argv)
     return task->pid;
 }
 
-static void
+static int
 syscall_proc_kill(int pid)
-{
-    remove_task_with_pid(pid);
-    _reschedule();
+{ 
+    if(pid != 0){
+        remove_task_with_pid(pid);
+        _reschedule();
+        return TRUE;
+    }
+    return FALSE;
 }
 
 static void

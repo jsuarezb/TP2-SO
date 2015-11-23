@@ -48,6 +48,11 @@ void concat(char * first, char * second, char * to);
 int strcmp(const char * str1, const char * str2);
 
 /*
+ * Copies one string to another
+ */
+char *strcpy(char* dest, const char * src);
+
+/*
  * Seeks for a char inside `str`
  * If found, returns the index of `c` inside `str`
  * If not found, returns -1

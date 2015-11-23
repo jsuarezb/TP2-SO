@@ -303,6 +303,20 @@ int strcmp(const char * str1, const char * str2)
 	return *str1 - *str2;
 }
 
+char *strcpy(char* dest, const char * src){
+	char* bk = dest;
+
+	while(*src!=0){
+		*dest = *src;
+		src++;
+		dest++;
+	}
+
+	*dest =0;
+
+	return bk;
+}
+
 int isDigit ( int n )
 {
 	return (n - '0' >= 0 && n - '0' <= 9);
@@ -341,7 +355,8 @@ init_proc(void (*func)(int, char **), int argc, char ** argv)
 void
 kill_proc(int pid)
 {
-    _sys_call(SYS_PROC_KILL, (uint64_t) pid, 0, 0);
+    if(!_sys_call(SYS_PROC_KILL, (uint64_t) pid, 0, 0))
+    	printf("No tienes permiso de root para detener la shell.\n");
 }
 
 void
