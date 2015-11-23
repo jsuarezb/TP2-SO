@@ -164,8 +164,7 @@ syscallHandler(uint64_t code, uint64_t arg1, uint64_t arg2, uint64_t arg3)
             return syscall_proc_init((void *) arg1, (int) arg2, (char **) arg3);
 
         case SYS_PROC_KILL:
-            syscall_proc_kill((int) arg1);
-            break;
+            return syscall_proc_kill((int) arg1);
 
         case SYS_PROC_SLEP:
             syscall_proc_sleep();
@@ -306,12 +305,13 @@ syscall_proc_init(void (*func)(int, char **), int argc, char ** argv)
 
 static int
 syscall_proc_kill(int pid)
-{ 
-    if(pid != 0){
+{
+    if(pid != 0 && pid != 1){
         remove_task_with_pid(pid);
         _reschedule();
         return TRUE;
     }
+
     return FALSE;
 }
 

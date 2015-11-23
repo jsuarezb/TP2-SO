@@ -355,7 +355,7 @@ init_proc(void (*func)(int, char **), int argc, char ** argv)
 void
 kill_proc(int pid)
 {
-    if(!_sys_call(SYS_PROC_KILL, (uint64_t) pid, 0, 0))
+    if(_sys_call(SYS_PROC_KILL, (uint64_t) pid, 0, 0) == 0)
     	printf("No tienes permiso de root para detener la shell.\n");
 }
 

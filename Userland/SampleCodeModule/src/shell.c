@@ -129,7 +129,9 @@ void parseCommand(const char * line)
     } else if (strcmp(command, IPCS_COMMAND) == 0) {
         init_proc(main_ipcs, 0, 0);
     } else if (strcmp(command, KILL_COMMAND) == 0) {
-    	kill_proc(stoi(args));
+        int i;
+        sscanf(line, "%s %d", command, &i);
+    	kill_proc(i);
     } else if (strcmp(command, FG_COMMAND) == 0) {
     	give_foreground(stoi(args));
     } else {
