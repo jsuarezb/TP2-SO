@@ -176,8 +176,8 @@ add_task(task_t* task){
  */
 
 void
-remove_task_with_pid(int pid){
-
+remove_task_with_pid(int pid)
+{
     int i = SetInts(0);
 
 	task_t* tr = find_task_with_pid(pid);
@@ -204,7 +204,8 @@ remove_task_with_pid(int pid){
  * return new task
  */
 
-task_t* create_task(void (*func)(int, char **), int argc, char**argv){
+task_t *
+create_task(void (*func)(int, char **), int argc, char**argv){
 
     int i = SetInts(0);
 
@@ -224,8 +225,6 @@ task_t* create_task(void (*func)(int, char **), int argc, char**argv){
     	task = &tasks[pid];
     	task->next = 0;
     	task->pid = pid;
-
-    	virtual_kalloc(stacks[pid]);
 
     	task->stack_base = stacks[pid];
     	task->stack = stacks[pid];
@@ -259,7 +258,7 @@ signal_task(int pid)
 stack_ptr switch_user_to_kernel(stack_ptr esp) {
 
     int i = SetInts(0);
-    
+
 	current->stack = esp;
     SetInts(i);
 

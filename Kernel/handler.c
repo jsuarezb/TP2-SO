@@ -75,7 +75,9 @@ static void syscall_proc_signal(int pid);
 static void syscall_proc_yield(void);
 
 void
-pageFaultHandler(void * address){
+pageFaultHandler(void * address)
+{
+    int is_enabled = SetInts(0);
 
     task_t* task = current_task();
 
@@ -83,24 +85,25 @@ pageFaultHandler(void * address){
     uint64_t bottom_limit = (uint64_t) task->stack_base - STACK_SIZE;
 
     int is_inside = (uint64_t) address <= top_limit
-        && (uint64_t) address >= bottom_limit;
+        && (uint64_t) address > bottom_limit;
 
-    ncPrint("Top limit: "); ncPrintHex(top_limit); ncNewline();
-    ncPrint("Bottom limit: "); ncPrintHex(bottom_limit); ncNewline();
-    ncPrint("Address accessed: "); ncPrintHex(address); ncNewline();
-    ncPrint("RSP: "); ncPrintHex(task->stack); ncNewline();
+    // ncPrint("Top limit: "); ncPrintHex(top_limit); ncNewline();
+    // ncPrint("Bottom limit: "); ncPrintHex(bottom_limit); ncNewline();
+    // ncPrint("Address accessed: "); ncPrintHex(address); ncNewline();
+    // ncPrint("RSP: "); ncPrintHex(task->stack); ncNewline();
 
     if (is_inside) {
-        void * a = virtual_kalloc(address);
-        ncPrintHex(a);
+        // Give 4kb of stack
+        virtual_kalloc(address);
+        SetInts(is_enabled);
+    } else {
+        ncPrintHex(address);
+        remove_task_with_pid(task->pid);
+        SetInts(is_enabled);
 
-    } else  {
-        // TODO what to do?
-        ncPrint("error");
-
-        _cli();
-        hlt();
+        _reschedule();
     }
+
 }
 
 /*

@@ -243,13 +243,30 @@ static void getCpuVendor()
 	printf("%s\n", vendor);
 }
 
+static void stack_overflow(void);
+
+void
+stack_overflow(void)
+{
+    int i[700] = {0};
+    int j = 0;
+
+    printf("%x\n", &j);
+}
+
 void
 alloc_main(int argc, char ** argv)
 {
-    int a = i++;
+    int i = 0;
 
-    while (a++ < 10000000 * 10)
-        if (a % 10000000 == 0)
-            printf("%d\n", a);
+    char * j = (char *) 0x2800000FF;
+    j[0] = 'a';
 
+    printf("Start\n");
+
+    while (i++ < 10000000);
+
+    printf("End\n");
+
+    stack_overflow();
 }

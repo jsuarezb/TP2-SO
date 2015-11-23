@@ -7,8 +7,10 @@ void task_init(task_t* task, void (*func)(int, char **), int argc, char** argv){
 
     int i = SetInts(0);
 
-	task->stack -= 0x20;	// making space to simulate context switching
+	task->stack -= sizeof(context_t);	// making space to simulate context switching
 	context_t* context = (context_t*)task->stack;
+
+    virtual_kalloc(task->stack);
 
 	context->gs = 0x01;
 	context->fs = 0x02;
@@ -51,10 +53,10 @@ task_wrapper(void (*func)(int, char **), int argc, char ** argv)
     int i = SetInts(0);
 
     task_t * task = get_current_task();
-    schedule();
     remove_task_with_pid(task->pid);
 
     SetInts(i);
+    _reschedule();
 
     while (1);
 }

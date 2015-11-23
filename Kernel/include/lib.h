@@ -11,6 +11,8 @@ void _cli(void);
 void _sti(void);
 void hlt(void);
 
+void _reschedule(void);
+
 int SetInts(int);
 
 void _irq00handler();

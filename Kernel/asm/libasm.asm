@@ -5,6 +5,7 @@ GLOBAL _exc14handler
 GLOBAL _int80handler
 GLOBAL _sti
 GLOBAL _cli
+GLOBAL _reschedule
 GLOBAL hlt
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
@@ -150,10 +151,36 @@ _exc14handler:
 	out PIC_MASTER_CONTROL, al ; and PIC can recieve the next one
 
 	popaq
-    
+
     pop rdx ; pop page fault error
 
 	iretq
+
+_reschedule:
+		pop QWORD[ret_addr] ;Direccion de retorno
+
+		mov QWORD[ss_addr], ss
+		push QWORD[ss_addr]
+
+		push rsp
+		pushf
+		mov QWORD[cs_addr], cs
+		push QWORD[cs_addr]
+		push QWORD[ret_addr]
+
+        pushaq
+    	mov rdi, rsp
+
+    	call switch_user_to_kernel
+
+    	mov rsp, rax
+
+    	call switch_kernel_to_user
+
+    	mov rsp, rax
+
+        popaq
+        iretq
 
 ; System call
 ; recieves the system call code in rax
@@ -236,3 +263,10 @@ finalizeSetup:
 hlt:
     nop
     jmp hlt
+
+ret_addr:
+		resq 1
+cs_addr:
+		resq 1
+ss_addr:
+		resq 1
