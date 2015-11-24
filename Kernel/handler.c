@@ -121,12 +121,9 @@ timertickHandler()
  */
 void keyboardHandler(unsigned char c)
 {
-	timer = timerLimit;
-	if (showingScreensaver) {
-		stopScreensaver();
-	}
-
+    int i = SetInts(0);
 	setKey(c);
+    SetInts(i);
 }
 
 /*

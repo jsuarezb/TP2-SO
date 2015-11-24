@@ -125,6 +125,7 @@ _irq00handler:
 
 ; Keyboard
 _irq01handler:
+    cli
 	pushaq
 
 	in al, KBD_PORT
@@ -138,7 +139,12 @@ _irq01handler:
 	and al, 7Fh
 	out KBD_STATUS, al
 
-	END_INT
+	mov al, 20h ; Acknowledge interruption was treated
+	out PIC_MASTER_CONTROL, al ; and PIC can recieve the next one
+
+	popaq
+    sti
+	iretq
 
 ; Page fault
 _exc14handler:

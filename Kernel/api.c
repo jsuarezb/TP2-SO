@@ -24,7 +24,7 @@ read(unsigned int fd, char * buf, int count)
         pause_task_with_pid(pid);
 
 		int i;
-		for (i = 0; i < count && !isBufferEmpty(); i++) {
+		for (i = 0; i < count && isBufferEmpty() == FALSE; i++) {
 			buf[i] = getKey();
 			bytes++;
 		}
