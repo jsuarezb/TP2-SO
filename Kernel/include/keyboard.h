@@ -7,5 +7,6 @@ void addKey(unsigned char c);
 unsigned char getKey();
 int isLetter(unsigned char c);
 int isBufferEmpty();
+int isBufferFull();
 
 #endif

@@ -352,6 +352,7 @@ main_test_2_ipc(int argc, char ** argv)
     void * sem = sem_get(key);
     char * shm = shm_get(key);
 
+    printf("Ingrese mensaje: ");
     scanf("%s\n", shm);
 
     sem_up(sem);

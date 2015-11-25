@@ -111,7 +111,6 @@ addKey(unsigned char c)
     keyboard.keysInBuffer++;
 
     task_t * foreground = get_foreground_task();
-    ncPrintDec(is_waiting_foreground(foreground->pid));
     if (is_waiting_foreground(foreground->pid) != 0) {
         set_waiting_foreground(foreground->pid, 0);
         resume_task_with_pid(foreground->pid);
