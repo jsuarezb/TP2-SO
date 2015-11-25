@@ -2,6 +2,7 @@
 #include "include/lib.h"
 #include "include/paging.h"
 #include "include/naiveConsole.h"
+#include "include/kalloc.h"
 
 #include <stdint.h>
 
@@ -19,6 +20,8 @@ static PDPE * pdpe_table1   = (PDPE *) 0x801000;
 void
 init_paging(void)
 {
+    init_kalloc();
+
     CR3 cr3 = create_cr3((uint64_t) pml4_table >> 12, 0);
     clear_page_entries(pml4_table);
 

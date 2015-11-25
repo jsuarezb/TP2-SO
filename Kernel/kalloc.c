@@ -4,9 +4,15 @@
 #include "include/pmem.h"
 #include "include/paging.h"
 #include "include/lib.h"
+#include "include/memmap.h"
 
-// We start to give memory at the second half of the virtual address map
-static void * available_virtual_address = HEAP_VIRTUAL_START;
+static MemoryBitmap bitmap;
+
+void
+init_kalloc(void)
+{
+    init_bitmap(&bitmap, (void *) 0x15000000, HEAP_VIRTUAL_START, VMEM_SIZE);
+}
 
 /**
  * Allocates a page and links it with a physical page
@@ -14,8 +20,7 @@ static void * available_virtual_address = HEAP_VIRTUAL_START;
 void *
 kalloc(void)
 {
-    void * virtual_address = available_virtual_address;
-    available_virtual_address += PAGE_SIZE; // Go to the next page
+    void * virtual_address = alloc_block(&bitmap);
 
     return virtual_kalloc(virtual_address);
 }
@@ -39,6 +44,7 @@ kfree(void * virtual_address)
     uint64_t cr3 = _asm_get_cr3();
     _asm_set_cr3(cr3);
 
+    free_block(&bitmap, virtual_address);
     pmem_free(pmem_address);
 }
 

@@ -3,6 +3,9 @@
 #define _KALLOC_H
 
 #define HEAP_VIRTUAL_START  ((void *) 0xFFFF800000000000)
+#define VMEM_SIZE    ((uint64_t) 4 * 1024 * 1024 * 1024) // 4 GB
+
+void init_kalloc(void);
 
 /**
  * Allocates a page virtually and returns the virtual address allocated
