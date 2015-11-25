@@ -36,6 +36,7 @@ void KBDinitialize()
 
 	keyboard.writeIndex = 0;
 	keyboard.readIndex = 0;
+    keyboard.keysInBuffer = 0;
 	keyboard.capsEnabled = FALSE;
 	keyboard.shiftEnabled = FALSE;
 	keyboard.ctrlEnabled = FALSE;
@@ -47,6 +48,7 @@ void KBDinitialize()
  */
 void setKey(unsigned char code)
 {
+    int i = SetInts(0);
 	struct KBDKey key;
 	int state = LOWERCASE;
 
@@ -91,17 +93,25 @@ void setKey(unsigned char code)
 
 	if (key.shown)
 		addKey(key.asciiCode);
+
+    SetInts(i);
 }
 
 void
 addKey(unsigned char c)
 {
+    if (isBufferFull() == TRUE)
+        return;
+
 	keyboard.buffer[keyboard.writeIndex++] = c;
 
 	if (keyboard.writeIndex == KBD_BUFFER_SIZE)
 		keyboard.writeIndex = 0;
 
+    keyboard.keysInBuffer++;
+
     task_t * foreground = get_foreground_task();
+    ncPrintDec(is_waiting_foreground(foreground->pid));
     if (is_waiting_foreground(foreground->pid) != 0) {
         set_waiting_foreground(foreground->pid, 0);
         resume_task_with_pid(foreground->pid);
@@ -111,11 +121,20 @@ addKey(unsigned char c)
 unsigned char
 getKey()
 {
-	unsigned char c = keyboard.buffer[keyboard.readIndex];
-	keyboard.buffer[keyboard.readIndex++] = 0;
+    int i = SetInts(0);
 
-	if (keyboard.readIndex == KBD_BUFFER_SIZE)
-		keyboard.readIndex = 0;
+    unsigned char c = 0;
+    if (isBufferEmpty() == FALSE) {
+
+    	c = keyboard.buffer[keyboard.readIndex];
+    	keyboard.buffer[keyboard.readIndex++] = 0;
+        keyboard.keysInBuffer--;
+
+    	if (keyboard.readIndex == KBD_BUFFER_SIZE)
+    		keyboard.readIndex = 0;
+    }
+
+    SetInts(i);
 
 	return c;
 }
@@ -131,8 +150,17 @@ int isLetter(unsigned char c)
 
 int isBufferEmpty()
 {
-	if (keyboard.buffer[keyboard.readIndex] != 0)
-		return FALSE;
+	if (keyboard.writeIndex == keyboard.readIndex && keyboard.keysInBuffer == 0)
+		return TRUE;
 
-	return TRUE;
+	return FALSE;
+}
+
+int
+isBufferFull()
+{
+    if (keyboard.writeIndex == keyboard.readIndex && keyboard.keysInBuffer == KBD_BUFFER_SIZE)
+        return TRUE;
+
+    return FALSE;
 }

@@ -153,6 +153,7 @@ struct KBD {
 	int readIndex;
 	int writeIndex;
 	int buffer[KBD_BUFFER_SIZE];
+    int keysInBuffer;
 };
 
 struct KBDKey {
